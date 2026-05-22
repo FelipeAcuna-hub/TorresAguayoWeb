@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Torres Aguayo — Panel Admin</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body class="bg-black text-white antialiased font-sans">
+
+    <nav class="border-b border-gray-800 p-5 flex justify-between items-center bg-black/80">
+        <div class="flex items-center space-x-4">
+            <div class="font-black tracking-tighter text-2xl uppercase text-red-500">Panel de Control</div>
+            <span id="user-badge" class="text-[10px] bg-gray-900 border border-gray-800 text-gray-400 font-mono px-2 py-0.5 rounded uppercase hidden">Admin</span>
+        </div>
+        <div class="space-x-6 text-xs font-bold tracking-widest text-gray-400">
+            <a href="index.html" class="hover:text-red-500 transition">VER SITIO</a>
+            <button id="btn-logout" class="text-red-500 hover:text-red-400 transition uppercase">CERRAR SESIÓN</button>
+        </div>
+    </nav>
+
+    <main class="max-w-6xl mx-auto px-6 pt-12 pb-32">
+        
+        <section class="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-12">
+            <div class="border border-gray-900 bg-gray-950/40 p-6 rounded-lg">
+                <div class="text-gray-500 font-mono text-xs uppercase">Items Registrados</div>
+                <div id="metric-total-items" class="text-4xl font-black mt-2 text-white font-mono">0</div>
+            </div>
+            <div class="border border-gray-900 bg-gray-950/40 p-6 rounded-lg">
+                <div class="text-gray-500 font-mono text-xs uppercase">Valor Total del Stock</div>
+                <div id="metric-total-value" class="text-4xl font-black mt-2 text-red-500 font-mono">$0</div>
+            </div>
+            <div class="border border-gray-900 bg-gray-950/40 p-6 rounded-lg">
+                <div class="text-gray-500 font-mono text-xs uppercase">Última Actualización</div>
+                <div id="metric-last-update" class="text-sm font-mono mt-4 text-gray-400 uppercase">Sincronizando...</div>
+            </div>
+        </section>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-12">
+            <section class="border border-gray-900 bg-gray-950/50 p-6 rounded-lg h-fit md:col-span-1">
+                <h2 class="text-xl font-bold uppercase tracking-tight mb-6 text-red-500 italic">Agregar al Catálogo</h2>
+                <form id="form-producto" class="space-y-4">
+                    <div>
+                        <label class="block text-xs font-mono text-gray-500 uppercase mb-1">Nombre del Componente</label>
+                        <input type="text" id="nombre" required class="w-full bg-gray-900 border border-gray-800 rounded p-2 text-sm focus:outline-none focus:border-red-500 text-white">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-mono text-gray-500 uppercase mb-1">Precio Neto ($)</label>
+                        <input type="number" id="precio" required class="w-full bg-gray-900 border border-gray-800 rounded p-2 text-sm focus:outline-none focus:border-red-500 text-white">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-mono text-gray-500 uppercase mb-1">Especificaciones Técnicas</label>
+                        <textarea id="descripcion" required class="w-full bg-gray-900 border border-gray-800 rounded p-2 text-sm h-24 focus:outline-none focus:border-red-500 text-white"></textarea>
+                    </div>
+                    <button type="submit" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold text-xs tracking-wider py-3 rounded transition-all uppercase">
+                        Inyectar a Base de Datos
+                    </button>
+                </form>
+            </section>
+
+            <section class="md:col-span-2">
+                <h2 class="text-xl font-bold uppercase tracking-tight mb-6 italic">Inventario en la Nube</h2>
+                <div id="lista-admin" class="space-y-3">
+                    </div>
+            </section>
+        </div>
+    </main>
+
+    <script>
+        // REEMPLAZA ESTOS DATOS CON LOS DE TU PANEL DE SUPABASE
+        const SUPABASE_URL = "TU_SUPABASE_URL_AQUÍ";
+        const SUPABASE_ANON_KEY = "TU_SUPABASE_ANON_KEY_AQUÍ";
+        
+        const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        const form = document.getElementById('form-producto');
+        const listaAdmin = document.getElementById('lista-admin');
+
+        // ELEMENTOS DE MÉTRICAS
+        const mTotalItems = document.getElementById('metric-total-items');
+        const mTotalValue = document.getElementById('metric-total-value');
+        const mLastUpdate = document.getElementById('metric-last-update');
+
+        // GUARDIÁN DE RUTA: Validar sesión activa del Administrador al cargar la página
+        async function checkUser() {
+            const { data: { session } } = await supabase.auth.getSession();
+            if (!session) {
+                // Sin sesión, devuelta al login
+                window.location.href = "login.html";
+            } else {
+                // Mostrar el correo del administrador conectado
+                const badge = document.getElementById('user-badge');
+                badge.innerText = session.user.email;
+                badge.classList.remove('hidden');
+                cargarInventarioReal();
+            }
+        }
+
+        // Cargar datos y calcular métricas en tiempo real
+        async function cargarInventarioReal() {
+            // Hacemos un SELECT a la tabla "productos" de Supabase
+            const { data: productos, error } = await supabase
+                .from('productos')
+                .select('*')
+                .order('id', { ascending: false });
+
+            if (error) {
+                console.error("Error cargando inventario:", error);
+                return;
+            }
+
+            // 1. Calcular Métricas
+            const totalItems = productos.length;
+            const totalValue = productos.reduce((sum, p) => sum + (p.precio || 0), 0);
+            
+            mTotalItems.innerText = totalItems;
+            mTotalValue.innerText = `$${totalValue.toLocaleString('es-CL')}`;
+            mLastUpdate.innerText = new Date().toLocaleTimeString('es-CL', { hour: '2-digit', minute: '2-digit' }) + " HRS";
+
+            // 2. Renderizar lista para quitar
+            listaAdmin.innerHTML = '';
+            if (productos.length === 0) {
+                listaAdmin.innerHTML = '<p class="text-gray-600 font-mono text-xs uppercase">Base de datos vacía.</p>';
+            }
+            
+            productos.forEach(prod => {
+                listaAdmin.innerHTML += `
+                    <div class="border border-gray-900 bg-gray-950 p-4 rounded flex justify-between items-center hover:border-gray-800 transition-all">
+                        <div>
+                            <h4 class="font-bold text-sm uppercase text-white">${prod.nombre}</h4>
+                            <p class="text-red-400 font-mono text-xs mt-0.5">$${prod.precio.toLocaleString('es-CL')}</p>
+                        </div>
+                        <button onclick="eliminarDelServidor(${prod.id})" class="text-xs font-bold text-gray-600 hover:text-red-500 transition uppercase tracking-wider">
+                            Eliminar
+                        </button>
+                    </div>
+                `;
+            });
+        }
+
+        // Crear/Insertar un nuevo producto en Supabase
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const nombre = document.getElementById('nombre').value;
+            const precio = parseInt(document.getElementById('precio').value);
+            const descripcion = document.getElementById('descripcion').value;
+
+            const { error } = await supabase
+                .from('productos')
+                .insert([{ nombre, precio, descripcion }]);
+
+            if (error) {
+                alert("Error al insertar componente: " + error.message);
+            } else {
+                form.reset();
+                cargarInventarioReal();
+            }
+        });
+
+        // Eliminar un producto por ID de Supabase
+        window.eliminarDelServidor = async function(id) {
+            if(confirm("¿Seguro que deseas dar de baja este componente técnico?")) {
+                const { error } = await supabase
+                    .from('productos')
+                    .delete()
+                    .eq('id', id);
+
+                if (error) {
+                    alert("Error al eliminar: " + error.message);
+                } else {
+                    cargarInventarioReal();
+                }
+            }
+        }
+
+        // Manejo del Logout
+        document.getElementById('btn-logout').addEventListener('click', async () => {
+            await supabase.auth.signOut();
+            window.location.href = "login.html";
+        });
+
+        // Ejecutar verificación al arrancar
+        checkUser();
+    </script>
+</body>
+</html>

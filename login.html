@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Torres Aguayo — Acceso Admin</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body class="bg-black text-white antialiased font-sans flex flex-col min-h-screen">
+
+    <nav class="border-b border-gray-800 p-5 flex justify-between items-center bg-black/80">
+        <div class="font-black tracking-tighter text-2xl uppercase">Torres Aguayo</div>
+        <div class="space-x-8 text-xs font-bold tracking-widest text-gray-400">
+            <a href="index.html" class="hover:text-red-500 transition">VOLVER AL SITIO</a>
+        </div>
+    </nav>
+
+    <main class="flex-grow flex items-center justify-center px-6 py-12">
+        <div class="w-full max-w-md border border-gray-900 bg-gray-950/50 p-8 rounded-lg">
+            <div class="text-center mb-8">
+                <span class="text-red-500 font-mono text-xs font-bold tracking-widest uppercase bg-red-500/10 px-3 py-1 rounded border border-red-500/20">
+                    Seguridad
+                </span>
+                <h1 class="text-3xl font-black tracking-tighter mt-4 uppercase italic">Iniciar Sesión</h1>
+                <p class="text-gray-500 text-xs mt-2 font-mono">PANEL DE ADMINISTRACIÓN PRIVADO</p>
+            </div>
+
+            <form id="form-login" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-mono text-gray-500 uppercase mb-1">Correo Electrónico</label>
+                    <input type="email" id="email" required class="w-full bg-gray-900 border border-gray-800 rounded p-3 text-sm focus:outline-none focus:border-red-500 text-white">
+                </div>
+                <div>
+                    <label class="block text-xs font-mono text-gray-500 uppercase mb-1">Contraseña</label>
+                    <input type="password" id="password" required class="w-full bg-gray-900 border border-gray-800 rounded p-3 text-sm focus:outline-none focus:border-red-500 text-white">
+                </div>
+                <div id="error-message" class="text-red-500 text-xs font-mono hidden bg-red-500/10 border border-red-500/20 p-3 rounded">
+                    Credenciales incorrectas o acceso no autorizado.
+                </div>
+                <button type="submit" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold text-xs tracking-wider py-4 rounded transition-all uppercase mt-6">
+                    Validar Credenciales
+                </button>
+            </form>
+        </div>
+    </main>
+
+    <script>
+        // REEMPLAZA ESTOS DATOS CON LOS DE TU PANEL DE SUPABASE
+        const SUPABASE_URL = "TU_SUPABASE_URL_AQUÍ";
+        const SUPABASE_ANON_KEY = "TU_SUPABASE_ANON_KEY_AQUÍ";
+        
+        const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        const form = document.getElementById('form-login');
+        const errorDiv = document.getElementById('error-message');
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            errorDiv.classList.add('hidden');
+            
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+
+            // Intentamos loguear con Supabase Auth
+            const { data, error } = await supabase.auth.signInWithPassword({
+                email: email,
+                password: password,
+            });
+
+            if (error) {
+                errorDiv.innerText = error.message;
+                errorDiv.classList.remove('hidden');
+            } else {
+                // Login exitoso, Supabase maneja la sesión automáticamente en las cookies/localStorage.
+                // Redirigimos al panel de administración real
+                window.location.href = "admin.html";
+            }
+        });
+    </script>
+</body>
+</html>

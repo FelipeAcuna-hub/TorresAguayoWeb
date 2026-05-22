@@ -1,0 +1,94 @@
+[
+    {
+      "id": 101,
+      "nombre": "Foco Proyector LED",
+      "precio": 45000,
+      "imagen": "img/foco-led.jpg",
+      "pdf": "pdf/foco-led.pdf",
+      "categoria": "Iluminación",
+      "descripcion": "Iluminación de alta potencia y estabilidad térmica para proyectos de personalización."
+    },
+    {
+      "id": 102,
+      "nombre": "Módulo AlzaVidrios Galant",
+      "precio": 28000,
+      "imagen": "img/alza-vidrios.jpg",
+      "pdf": "pdf/alza-vidrios.pdf",
+      "categoria": "Automatización",
+      "descripcion": "Sistema centralizado electrónico compatible con motores de ventanas estándar."
+    },
+    {
+      "id": 103,
+      "nombre": "Relay Temporizador Luz",
+      "precio": 8500,
+      "imagen": "img/relay-temporizador.jpg",
+      "pdf": "pdf/relay-temporizador.pdf",
+      "categoria": "Control",
+      "descripcion": "Control microcontrolado para retardo de señales eléctricas en accesorios."
+    },
+    {
+      "id": 104,
+      "nombre": "Buzzer de Alarma 12V",
+      "precio": 4200,
+      "imagen": "img/buzzer-alarm.jpg",
+      "pdf": "pdf/buzzer-alarm.pdf",
+      "categoria": "Seguridad",
+      "descripcion": "Indicador acústico de alta intensidad ideal para sistemas de alerta automotriz."
+    },
+    {
+        "id": 105,
+        "nombre": "Autel KM100",
+        "precio": 856800,
+        "imagen": "img/buzzer-alarm.jpg",
+        "pdf": "pdf/buzzer-alarm.pdf",
+        "categoria": "Seguridad",
+        "descripcion": "Indicador acústico de alta intensidad ideal para sistemas de alerta automotriz."
+    },
+    {
+        "id": 105,
+        "nombre": "Autel IM608 PRO II",
+        "precio": 4153100,
+        "imagen": "img/autelim608proii.png",
+        "pdf": "pdf/buzzer-alarm.pdf",
+        "categoria": "Seguridad",
+        "descripcion": "Indicador acústico de alta intensidad ideal para sistemas de alerta automotriz."
+    },
+    {
+        "id": 106,
+        "nombre": "FLEX Slave Full protolos",
+        "precio": 3808000,
+        "imagen": "img/flexslavefull.png",
+        "pdf": "pdf/buzzer-alarm.pdf",
+        "categoria": "Seguridad",
+        "descripcion": "Indicador acústico de alta intensidad ideal para sistemas de alerta automotriz."
+    },
+    {
+        "id": 107,
+        "nombre": "FLEX Slave Standard",
+        "precio": 2300000,
+        "imagen": "img/flexslavefull.png",
+        "pdf": "pdf/buzzer-alarm.pdf",
+        "categoria": "Seguridad",
+        "descripcion": "Indicador acústico de alta intensidad ideal para sistemas de alerta automotriz."
+    },
+    {
+        "id": 108,
+        "nombre": "FLEX Master Full protolos",
+        "precio": 6650000,
+        "imagen": "img/flexslavefull.png",
+        "pdf": "pdf/buzzer-alarm.pdf",
+        "categoria": "Seguridad",
+        "descripcion": "Indicador acústico de alta intensidad ideal para sistemas de alerta automotriz."
+    },
+    {
+        "id": 109,
+        "nombre": "FLEX Master Standard",
+        "precio": 4200000,
+        "imagen": "img/flexslavefull.png",
+        "pdf": "pdf/buzzer-alarm.pdf",
+        "categoria": "Seguridad",
+        "descripcion": "Indicador acústico de alta intensidad ideal para sistemas de alerta automotriz."
+    }
+
+
+  ]

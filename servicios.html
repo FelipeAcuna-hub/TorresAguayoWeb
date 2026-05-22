@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Torres Aguayo — Servicios</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class', // Habilita el control de apariencia por clase en la raíz <html>
+        }
+    </script>
+</head>
+
+<body class="bg-white text-black dark:bg-black dark:text-white antialiased font-sans flex flex-col min-h-screen transition-colors duration-300">
+
+    <div id="header-contenedor" class="sticky top-0 z-50"></div>
+
+    <main class="flex-grow max-w-6xl mx-auto px-6 pt-16 pb-32 w-full">
+        <div class="border-b border-gray-200 dark:border-gray-900 pb-4 mb-8 transition-colors">
+            <span class="text-red-500 font-mono text-xs font-bold tracking-widest uppercase bg-red-500/10 px-3 py-1 rounded border border-red-500/20">
+                Líneas de Trabajo
+            </span>
+            <h1 class="text-4xl font-black tracking-tighter uppercase italic mt-4 text-black dark:text-white">
+                Nuestros <span class="text-red-500 not-italic font-light">Servicios</span>
+            </h1>
+        </div>
+        
+        <p class="text-gray-600 dark:text-gray-400 font-mono text-xs uppercase tracking-wider">
+            Aquí puedes detallar los trabajos de ingeniería, personalización o instalación que realizas.
+        </p>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-12">
+            <div class="border border-gray-200 bg-gray-50 dark:border-gray-900 dark:bg-gray-950/40 p-6 rounded-lg transition-colors">
+                <h3 class="text-lg font-bold uppercase tracking-tight mb-2">Ingeniería y Diagnóstico</h3>
+                <p class="text-gray-500 dark:text-gray-400 text-xs leading-relaxed">Área destinada al desarrollo, optimización de módulos electrónicos y escaneo profesional de sistemas complejos.</p>
+            </div>
+            <div class="border border-gray-200 bg-gray-50 dark:border-gray-900 dark:bg-gray-950/40 p-6 rounded-lg transition-colors">
+                <h3 class="text-lg font-bold uppercase tracking-tight mb-2">Instalación y Calibración</h3>
+                <p class="text-gray-500 dark:text-gray-400 text-xs leading-relaxed">Montaje de componentes mecánicos, cableado estructurado automotriz y validación de parámetros de precisión.</p>
+            </div>
+        </div>
+    </main>
+
+    <div id="footer-contenedor"></div>
+
+    <script src="config.js"></script>
+
+    <script>
+        // 1. PERSISTENCIA DE LA CONFIGURACIÓN DE APARIENCIA
+        const temaGuardado = localStorage.getItem('tema_apariencia');
+        if (temaGuardado === 'dark' || (!temaGuardado && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.documentElement.classList.add('dark');
+        } else {
+            document.documentElement.classList.remove('dark');
+            corregirBotonClaro();
+        }
+
+        window.conmutarApariencia = function() {
+            const html = document.documentElement;
+            if (html.classList.contains('dark')) {
+                html.classList.remove('dark');
+                localStorage.setItem('tema_apariencia', 'light');
+            } else {
+                html.classList.add('dark');
+                localStorage.setItem('tema_apariencia', 'dark');
+            }
+            inicializarEcosistema();
+        }
+
+        function corregirBotonClaro() {
+            setTimeout(() => {
+                const btn = document.getElementById('btn-apariencia');
+                if (btn && !document.documentElement.classList.contains('dark')) {
+                    btn.innerText = "Modo Oscuro 🌙";
+                }
+            }, 80);
+        }
+
+        // 2. CARGA CONTROLADA DE INTERFAZ GLOBAL
+        async function inicializarEcosistema() {
+            try {
+                // Inyectar el menú unificado
+                const respHeader = await fetch('components/header.html');
+                document.getElementById('header-contenedor').innerHTML = await respHeader.text();
+                corregirBotonClaro();
+
+                // DESTACAR DINÁMICAMENTE LA PESTAÑA SERVICIOS
+                const linkServicios = document.getElementById('link-servicios');
+                if (linkServicios) {
+                    linkServicios.className = "text-black dark:text-white border-b-2 border-black dark:border-white pb-1";
+                }
+
+                // Inyectar el pie de página unificado
+                const respFooter = await fetch('components/footer.html');
+                document.getElementById('footer-contenedor').innerHTML = await respFooter.text();
+
+                // Consultar base de datos de Supabase para activar el saludo si corresponde
+                const supabaseClient = supabase.createClient(CONFIG.SUPABASE_URL, CONFIG.SUPABASE_ANON_KEY);
+                const { data: { session } } = await supabaseClient.auth.getSession();
+                
+                if (session) {
+                    const saludoNav = document.getElementById('saludo-nav');
+                    const nombreUsuario = session.user.email.split('@')[0];
+
+                    saludoNav.innerText = `Bienvenido, ${nombreUsuario}`;
+                    saludoNav.classList.remove('opacity-0');
+                    saludoNav.classList.add('opacity-100');
+                }
+            } catch (error) {
+                console.error("Error crítico sincronizando el ecosistema en servicios:", error);
+            }
+        }
+
+        // Arrancar automatización al abrir
+        inicializarEcosistema();
+    </script>
+</body>
+
+</html>

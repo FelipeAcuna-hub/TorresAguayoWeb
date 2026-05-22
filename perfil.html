@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Torres Aguayo — Mi Perfil</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = { darkMode: 'class' }
+    </script>
+</head>
+
+<body class="bg-white text-black dark:bg-black dark:text-white antialiased font-sans flex flex-col min-h-screen transition-colors duration-300">
+
+    <div id="header-contenedor" class="sticky top-0 z-50"></div>
+
+    <main class="flex-grow max-w-6xl w-full mx-auto px-6 pt-12 pb-24">
+        
+        <div id="seccion-auth" class="max-w-md mx-auto border border-gray-200 dark:border-gray-900 bg-gray-50 dark:bg-gray-950/40 p-8 rounded-lg mt-12 transition-colors space-y-6 hidden">
+            <div class="border-b border-gray-200 dark:border-gray-900 pb-3 flex justify-between">
+                <button onclick="cambiarModoAuth('login')" id="tab-login" class="text-sm font-mono font-bold uppercase tracking-wider text-red-500 border-b-2 border-red-500 pb-1">Ingresar</button>
+                <button onclick="cambiarModoAuth('registro')" id="tab-registro" class="text-sm font-mono font-bold uppercase tracking-wider text-gray-400 pb-1">Registrarse</button>
+            </div>
+
+            <form id="form-auth" onsubmit="procesarAuth(event)" class="space-y-4 font-mono text-xs">
+                <div>
+                    <label class="block text-gray-500 uppercase mb-1">Correo Electrónico</label>
+                    <input type="email" id="auth-email" required class="w-full bg-white dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-800 rounded p-2.5 focus:outline-none focus:border-red-500 text-black dark:text-white transition-colors">
+                </div>
+                <div>
+                    <label class="block text-gray-500 uppercase mb-1">Contraseña</label>
+                    <input type="password" id="auth-password" required class="w-full bg-white dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-800 rounded p-2.5 focus:outline-none focus:border-red-500 text-black dark:text-white transition-colors">
+                </div>
+                <button type="submit" id="btn-auth-submit" class="w-full bg-red-600 hover:bg-red-700 text-white font-sans font-bold text-xs tracking-widest py-3 rounded transition-all uppercase mt-2">
+                    Iniciar Sesión
+                </button>
+            </form>
+        </div>
+
+        <div id="seccion-dashboard" class="grid grid-cols-1 md:grid-cols-3 gap-8 items-start hidden">
+            <div class="border border-gray-200 bg-gray-50 dark:border-gray-900 dark:bg-gray-950/40 p-6 rounded-lg space-y-4 transition-colors">
+                <div class="w-16 h-16 bg-zinc-200 dark:bg-zinc-900 rounded-full border border-zinc-300 dark:border-zinc-800 flex items-center justify-center text-xl font-bold text-red-500 font-mono">U</div>
+                <div>
+                    <h2 class="text-lg font-black tracking-tight uppercase" id="perfil-email">...</h2>
+                    <p id="perfil-rol" class="text-gray-500 font-mono text-[10px] uppercase mt-0.5">Cliente Registrado</p>
+                </div>
+                <div class="border-t border-gray-200 dark:border-gray-900 pt-4 text-[11px] font-mono text-gray-500 dark:text-gray-400 space-y-2">
+                    <div>ID USUARIO: <span id="perfil-id" class="text-zinc-600">...</span></div>
+                    <div>ACCESO: <span id="perfil-creado" class="text-zinc-600">...</span></div>
+                </div>
+                <button onclick="cerrarSesion()" class="w-full text-center border border-zinc-300 dark:border-zinc-800 hover:border-red-500/40 text-gray-500 hover:text-red-500 font-mono text-[10px] py-2 rounded transition uppercase">Cerrar Sesión Activa [X]</button>
+            </div>
+
+            <div class="md:col-span-2 space-y-8">
+                <section class="border border-gray-200 bg-gray-50 dark:border-gray-900 dark:bg-gray-950/40 p-6 rounded-lg transition-colors">
+                    <h3 class="text-sm font-mono font-bold uppercase tracking-wider text-red-500 mb-6 border-b border-gray-200 dark:border-gray-900 pb-2">Datos de Despacho y Contacto</h3>
+                    <form id="form-perfil" class="grid grid-cols-1 sm:grid-cols-2 gap-4 font-mono text-xs">
+                        <div class="sm:col-span-2">
+                            <label class="block text-gray-500 uppercase mb-1">Nombre Completo</label>
+                            <input type="text" id="edit-nombre" class="w-full bg-white dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-800 rounded p-2.5 text-black dark:text-white uppercase focus:outline-none focus:border-red-500">
+                        </div>
+                        <div>
+                            <label class="block text-gray-400 dark:text-gray-600 mb-1">Correo Electrónico</label>
+                            <input type="email" id="edit-correo" disabled class="w-full bg-zinc-200 dark:bg-zinc-950 rounded p-2.5 text-zinc-500 cursor-not-allowed">
+                        </div>
+                        <div>
+                            <label class="block text-gray-500 uppercase mb-1">Teléfono</label>
+                            <input type="tel" id="edit-telefono" class="w-full bg-white dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-800 rounded p-2.5 text-black dark:text-white focus:outline-none focus:border-red-500">
+                        </div>
+                        <div>
+                            <label class="block text-gray-500 uppercase mb-1">Comuna</label>
+                            <input type="text" id="edit-comuna" class="w-full bg-white dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-800 rounded p-2.5 text-black dark:text-white uppercase focus:outline-none focus:border-red-500">
+                        </div>
+                        <div>
+                            <label class="block text-gray-500 uppercase mb-1">Dirección (Calle / Av.)</label>
+                            <input type="text" id="edit-direccion" class="w-full bg-white dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-800 rounded p-2.5 text-black dark:text-white uppercase focus:outline-none focus:border-red-500">
+                        </div>
+                        <div>
+                            <label class="block text-gray-500 uppercase mb-1">Número de Casa</label>
+                            <input type="text" id="edit-numero-casa" class="w-full bg-white dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-800 rounded p-2.5 text-black dark:text-white uppercase focus:outline-none focus:border-red-500">
+                        </div>
+                        <div>
+                            <label class="block text-gray-500 uppercase mb-1">Depto / Of.</label>
+                            <input type="text" id="edit-depto" class="w-full bg-white dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-800 rounded p-2.5 text-black dark:text-white uppercase focus:outline-none focus:border-red-500">
+                        </div>
+                        <div class="sm:col-span-2 pt-2 flex justify-end">
+                            <button type="button" onclick="guardarDatosLocales()" class="bg-red-600 hover:bg-red-700 text-white font-sans font-bold text-xs tracking-widest px-6 py-3 rounded transition-all uppercase">Actualizar Datos</button>
+                        </div>
+                    </form>
+                </section>
+            </div>
+        </div>
+
+    </main>
+
+    <div id="footer-contenedor"></div>
+
+    <script src="config.js"></script>
+    <script>
+        const supabaseClient = supabase.createClient(CONFIG.SUPABASE_URL, CONFIG.SUPABASE_ANON_KEY);
+
+        // CORREO AUTORIZADO COMO ADMINISTRADOR MAESTRO
+        const EMAIL_ADMINISTRADOR = "torresaguayo142@gmail.com"; 
+
+        let modoAuthActual = 'login'; // login o registro
+
+        // Cambiar pestañas visuales de Auth
+        window.cambiarModoAuth = function(modo) {
+            modoAuthActual = modo;
+            const tabL = document.getElementById('tab-login');
+            const tabR = document.getElementById('tab-registro');
+            const btnSubmit = document.getElementById('btn-auth-submit');
+
+            if(modo === 'login') {
+                tabL.className = "text-sm font-mono font-bold uppercase tracking-wider text-red-500 border-b-2 border-red-500 pb-1";
+                tabR.className = "text-sm font-mono font-bold uppercase tracking-wider text-gray-400 pb-1";
+                btnSubmit.innerText = "Iniciar Sesión";
+            } else {
+                tabR.className = "text-sm font-mono font-bold uppercase tracking-wider text-red-500 border-b-2 border-red-500 pb-1";
+                tabL.className = "text-sm font-mono font-bold uppercase tracking-wider text-gray-400 pb-1";
+                btnSubmit.innerText = "Crear Cuenta Nueva";
+            }
+        }
+
+        // PROCESAR LOGIN O REGISTRO EN SUPABASE AUTH
+        window.procesarAuth = async function(event) {
+            event.preventDefault();
+            const email = document.getElementById('auth-email').value.trim();
+            const password = document.getElementById('auth-password').value;
+
+            if (modoAuthActual === 'login') {
+                const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
+                if (error) alert("Error al ingresar: " + error.message);
+                else inicializarEcosistema();
+            } else {
+                const { data, error } = await supabaseClient.auth.signUp({ email, password });
+                if (error) alert("Error al registrar: " + error.message);
+                else {
+                    alert("¡Registro exitoso! Ya puedes iniciar sesión con tus credenciales.");
+                    cambiarModoAuth('login');
+                }
+            }
+        }
+
+        // VERIFICACIÓN LOGÍSTICA DE PERMISOS
+        async function verificarEstadoSesion() {
+            const { data: { session } } = await supabaseClient.auth.getSession();
+            const divAuth = document.getElementById('seccion-auth');
+            const divDash = document.getElementById('seccion-dashboard');
+            const contenedorAdmin = document.getElementById('contenedor-admin');
+
+            if (!session) {
+                // Si no hay sesión, se muestra el login y se oculta el panel
+                divAuth.classList.remove('hidden');
+                divDash.classList.add('hidden');
+                if (contenedorAdmin) contenedorAdmin.innerHTML = '';
+                return;
+            }
+
+            // Si hay sesión, levantamos el panel de control
+            divAuth.classList.add('hidden');
+            divDash.classList.remove('hidden');
+
+            const user = session.user;
+            document.getElementById('perfil-email').innerText = user.email.split('@')[0];
+            document.getElementById('perfil-id').innerText = user.id.slice(-8).toUpperCase();
+            document.getElementById('perfil-creado').innerText = new Date(user.created_at).toLocaleDateString('es-CL');
+            document.getElementById('edit-correo').value = user.email;
+
+            // EVALUACIÓN TÉCNICA DE ROL ADMINISTRADOR
+            if (user.email.toLowerCase() === EMAIL_ADMINISTRADOR.toLowerCase()) {
+                document.getElementById('perfil-rol').innerText = "Administrador del Sistema 🔑";
+                document.getElementById('perfil-rol').className = "text-red-500 font-mono text-[10px] uppercase mt-0.5 font-bold";
+
+                // INYECCIÓN DINÁMICA DE LA PESTAÑA EN EL NAVBAR EN TIEMPO REAL
+                if (contenedorAdmin) {
+                    contenedorAdmin.innerHTML = `<a href="admin.html" id="link-admin" class="text-gray-400 dark:text-gray-500 hover:text-red-500 transition-all pb-1 border-b-2 border-transparent uppercase font-bold">ADMIN</a>`;
+                }
+            } else {
+                document.getElementById('perfil-rol').innerText = "Cliente Registrado";
+                if (contenedorAdmin) contenedorAdmin.innerHTML = '';
+            }
+        }
+
+        window.cerrarSesion = async function() {
+            await supabaseClient.auth.signOut();
+            window.location.reload();
+        }
+
+        window.guardarDatosLocales = function() {
+            alert("¡Datos guardados provisionalmente!");
+        }
+
+        // CONTROL DE APARIENCIA COHERENTE
+        const temaGuardado = localStorage.getItem('tema_apariencia');
+        if (temaGuardado === 'dark' || (!temaGuardado && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.documentElement.classList.add('dark');
+        } else {
+            document.documentElement.classList.remove('dark');
+        }
+
+        window.conmutarApariencia = function() {
+            const html = document.documentElement;
+            if (html.classList.contains('dark')) {
+                html.classList.remove('dark');
+                localStorage.setItem('tema_apariencia', 'light');
+            } else {
+                html.classList.add('dark');
+                localStorage.setItem('tema_apariencia', 'dark');
+            }
+            inicializarEcosistema();
+        }
+
+        async function inicializarEcosistema() {
+            try {
+                const respHeader = await fetch('components/header.html');
+                document.getElementById('header-contenedor').innerHTML = await respHeader.text();
+                
+                // Ejecutamos la verificación de permisos primero para saber si pintar la pestaña Admin
+                await verificarEstadoSesion();
+
+                // Destacamos la pestaña PERFIL
+                const linkPerfil = document.getElementById('link-perfil');
+                if (linkPerfil) {
+                    linkPerfil.classList.remove('text-gray-400', 'dark:text-gray-500');
+                    linkPerfil.classList.add('text-black', 'dark:text-white', 'border-black', 'dark:border-white');
+                }
+
+                // Colocar texto adecuado en botón apariencia
+                const btn = document.getElementById('btn-apariencia');
+                if (btn && !document.documentElement.classList.contains('dark')) {
+                    btn.innerText = "Modo Oscuro 🌙";
+                }
+
+                // Cargar Footer
+                const respFooter = await fetch('components/footer.html');
+                document.getElementById('footer-contenedor').innerHTML = await respFooter.text();
+
+                // Poner saludo
+                const { data: { session } } = await supabaseClient.auth.getSession();
+                if (session) {
+                    const saludoNav = document.getElementById('saludo-nav');
+                    saludoNav.innerText = `Bienvenido, ${session.user.email.split('@')[0]}`;
+                    saludoNav.classList.remove('opacity-0');
+                    saludoNav.classList.add('opacity-100');
+                }
+            } catch (error) { console.error(error); }
+        }
+
+        inicializarEcosistema();
+    </script>
+</body>
+
+</html>

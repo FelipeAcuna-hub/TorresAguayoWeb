@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Torres Aguayo — Detalle de Componente</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class', // Habilita el control por clase en la raíz <html>
+        }
+    </script>
+</head>
+
+<body class="bg-white text-black dark:bg-black dark:text-white antialiased font-sans flex flex-col min-h-screen transition-colors duration-300">
+
+    <div id="header-contenedor" class="sticky top-0 z-50"></div>
+
+    <main class="flex-grow max-w-6xl w-full mx-auto px-6 pt-12 pb-24">
+        
+        <div id="detalle-producto" class="grid grid-cols-1 md:grid-cols-2 gap-12 items-start mt-8">
+            </div>
+
+    </main>
+
+    <div id="footer-contenedor"></div>
+
+    <script src="config.js"></script>
+
+    <script>
+        const contenedor = document.getElementById('detalle-producto');
+
+        // 1. PERSISTENCIA DE LA CONFIGURACIÓN DE APARIENCIA
+        const temaGuardado = localStorage.getItem('tema_apariencia');
+        if (temaGuardado === 'dark' || (!temaGuardado && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.documentElement.classList.add('dark');
+        } else {
+            document.documentElement.classList.remove('dark');
+            corregirBotonClaro();
+        }
+
+        window.conmutarApariencia = function() {
+            const html = document.documentElement;
+            if (html.classList.contains('dark')) {
+                html.classList.remove('dark');
+                localStorage.setItem('tema_apariencia', 'light');
+            } else {
+                html.classList.add('dark');
+                localStorage.setItem('tema_apariencia', 'dark');
+            }
+            // Re-renderizamos para que el Header y las tarjetas se adapten al tiro
+            inicializarEcosistema();
+        }
+
+        function corregirBotonClaro() {
+            setTimeout(() => {
+                const btn = document.getElementById('btn-apariencia');
+                if (btn && !document.documentElement.classList.contains('dark')) {
+                    btn.innerText = "Modo Oscuro 🌙";
+                }
+            }, 80);
+        }
+
+        // 2. DETALLE DINÁMICO: Capturamos el parámetro ID de la URL (?id=...)
+        const urlParams = new URLSearchParams(window.location.search);
+        const productoId = parseInt(urlParams.get('id'));
+
+        async function cargarDetalle() {
+            try {
+                const respuesta = await fetch('productos.json');
+                const productos = await respuesta.json();
+
+                // Buscamos el repuesto específico
+                const prod = productos.find(p => p.id === productoId);
+
+                if (!prod) {
+                    contenedor.innerHTML = `<p class="text-gray-500 font-mono text-xs uppercase col-span-2 text-center py-12">Componente técnico no registrado en el catálogo.</p>`;
+                    return;
+                }
+
+                // Seteamos el título de la pestaña con el nombre del equipo
+                document.title = `${prod.nombre} — Torres Aguayo`;
+
+                // Renderizado condicional de la Ficha en PDF
+                let enlacePdf = '';
+                if (prod.pdf && prod.pdf !== "") {
+                    enlacePdf = `
+                        <a href="${prod.pdf}" target="_blank" class="inline-block text-gray-700 dark:text-gray-300 hover:text-black dark:hover:text-white font-mono text-xs tracking-wider border border-zinc-300 dark:border-zinc-800 hover:border-zinc-500 dark:hover:border-zinc-600 bg-zinc-100 dark:bg-zinc-950 px-4 py-2.5 rounded transition-colors uppercase mt-4">
+                            📄 Descargar Ficha Técnica (PDF)
+                        </a>
+                    `;
+                }
+
+                // Inyectamos la estructura adaptada a ambos modos lumínicos
+                contenedor.innerHTML = `
+                    <div class="border border-gray-200 bg-gray-50/50 dark:border-gray-900 dark:bg-gray-950/30 rounded-lg p-6 flex items-center justify-center overflow-hidden h-[400px] md:h-[500px] transition-colors">
+                        <img src="${prod.imagen}" alt="${prod.nombre}" class="w-full h-full object-contain rounded-md group-hover:scale-105 transition-transform duration-300">
+                    </div>
+
+                    <div class="space-y-6">
+                        <div class="border-b border-gray-200 dark:border-gray-900 pb-4 transition-colors">
+                            <span class="text-red-500 font-mono text-xs tracking-widest uppercase bg-red-500/10 px-2.5 py-1 rounded border border-red-500/20 inline-block">
+                                ${prod.categoria}
+                            </span>
+                            <p class="text-gray-400 dark:text-gray-500 font-mono text-[11px] mt-3 uppercase tracking-wider">SKU / ID TÉCNICO: #00${prod.id}</p>
+                            <h1 class="text-3xl md:text-4xl font-black tracking-tighter uppercase mt-2 text-black dark:text-white leading-tight">${prod.nombre}</h1>
+                        </div>
+
+                        <div class="text-2xl font-mono font-bold text-red-600 dark:text-red-400">
+                            $${prod.precio.toLocaleString('es-CL')} <span class="text-xs text-gray-400 dark:text-gray-500 font-sans font-normal ml-1">+ IVA</span>
+                        </div>
+
+                        <div class="space-y-2">
+                            <h4 class="text-xs font-mono text-gray-500 dark:text-gray-400 uppercase tracking-widest">Especificaciones Técnicas:</h4>
+                            <p class="text-gray-600 dark:text-gray-400 text-sm leading-relaxed font-light">
+                                ${prod.descripcion} Componente de alta precisión testeado y validado bajo estrictas normas de rendimiento para integración de flujos y diagnósticos avanzados en el ecosistema digital automotriz.
+                            </p>
+                        </div>
+
+                        <div class="pt-6 border-t border-gray-200 dark:border-gray-900 space-y-4 transition-colors">
+                            <button onclick="redirigirAlPago()" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold text-sm tracking-widest py-4 rounded transition-all uppercase font-mono shadow-[0_4px_20px_rgba(220,38,38,0.15)]">
+                                Comprar Ahora
+                            </button>
+                            <div>
+                                ${enlacePdf}
+                            </div>
+                        </div>
+                    </div>
+                `;
+
+            } catch (error) {
+                console.error("Error cargando el detalle:", error);
+                contenedor.innerHTML = `<p class="text-gray-500 font-mono text-xs uppercase col-span-2 text-center py-12">Error técnico al sincronizar la ficha del producto.</p>`;
+            }
+        }
+
+        // Lógica del botón Comprar Ahora: Añade a la selección y manda al Checkout
+        window.redirigirAlPago = function() {
+            let actuales = JSON.parse(localStorage.getItem('carrito_seleccion')) || [];
+            if (!actuales.includes(productoId)) {
+                actuales.push(productoId);
+                localStorage.setItem('carrito_seleccion', JSON.stringify(actuales));
+            }
+            window.location.href = "carrito.html";
+        }
+
+        // 3. INICIALIZADOR DE INTERFAZ MODULAR COMPLETA
+        async function inicializarEcosistema() {
+            try {
+                // Inyectar Barra superior
+                const respHeader = await fetch('components/header.html');
+                document.getElementById('header-contenedor').innerHTML = await respHeader.text();
+                corregirBotonClaro();
+
+                // Nota de Arquitectura: En la página de producto detallado no se subraya ninguna
+                // pestaña porque el usuario está dentro de una ficha técnica específica.
+
+                // Inyectar Pie de página
+                const respFooter = await fetch('components/footer.html');
+                document.getElementById('footer-contenedor').innerHTML = await respFooter.text();
+
+                // Consultar Auth en Supabase para el Saludo dinámico
+                const supabaseClient = supabase.createClient(CONFIG.SUPABASE_URL, CONFIG.SUPABASE_ANON_KEY);
+                const { data: { session } } = await supabaseClient.auth.getSession();
+                
+                if (session) {
+                    const saludoNav = document.getElementById('saludo-nav');
+                    const nombreUsuario = session.user.email.split('@')[0];
+
+                    saludoNav.innerText = `Bienvenido, ${nombreUsuario}`;
+                    saludoNav.classList.remove('opacity-0');
+                    saludoNav.classList.add('opacity-100');
+                }
+            } catch (error) {
+                console.error("Error en sincronización modular de la ficha:", error);
+            }
+        }
+
+        // Ejecuciones iniciales controladas
+        inicializarEcosistema();
+        cargarDetalle();
+    </script>
+</body>
+
+</html>

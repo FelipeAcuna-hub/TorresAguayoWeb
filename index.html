@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Torres Aguayo — Sistemas e Ingeniería</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class', // Switch activado por clase en etiqueta <html>
+        }
+    </script>
+</head>
+
+<body class="bg-white text-black dark:bg-black dark:text-white antialiased font-sans flex flex-col min-h-screen transition-colors duration-300">
+
+    <div id="header-contenedor" class="sticky top-0 z-50"></div>
+
+    <main class="flex-grow max-w-6xl mx-auto px-6 pt-20 pb-32">
+        
+        <section class="text-center max-w-3xl mx-auto mb-24">
+            <span class="text-red-500 font-mono text-xs font-bold tracking-widest uppercase bg-red-500/10 px-3 py-1 rounded border border-red-500/20">
+                Sistemas e Ingeniería
+            </span>
+            <h1 class="text-5xl md:text-7xl font-black tracking-tighter mt-6 mb-6 uppercase italic text-black dark:text-white">
+                Torres <span class="text-red-600 not-italic font-light">Aguayo</span>
+            </h1>
+            <p class="text-gray-600 dark:text-gray-400 text-lg md:text-xl font-light leading-relaxed mb-10">
+                Soluciones avanzadas en gestión de repuestos, automatización y componentes técnicos de alta precisión.
+            </p>
+            <div class="flex flex-col sm:flex-row justify-center gap-4">
+                <a href="catalogo.html" class="bg-red-600 hover:bg-red-700 text-white font-bold text-sm tracking-wider px-8 py-4 rounded transition-all uppercase text-center shadow-[0_4px_20px_rgba(220,38,38,0.15)]">
+                    Explorar Catálogo
+                </a>
+            </div>
+        </section>
+
+        <section class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            
+            <div class="border border-gray-200 bg-gray-50 dark:border-gray-900 dark:bg-gray-950/50 p-8 rounded-lg hover:border-red-500/30 dark:hover:border-red-500/30 transition-all group duration-300">
+                <div class="text-red-500 font-mono text-xs mb-4 group-hover:text-red-600 dark:group-hover:text-white transition-colors">01 / LOGÍSTICA</div>
+                <h3 class="text-xl font-bold mb-3 uppercase tracking-tight">Stock Cars & Repuestos</h3>
+                <p class="text-gray-500 dark:text-gray-400 text-sm leading-relaxed">
+                    Disponibilidad inmediata de piezas críticas con trazabilidad completa de inventario.
+                </p>
+            </div>
+
+            <div class="border border-gray-200 bg-gray-50 dark:border-gray-900 dark:bg-gray-950/50 p-8 rounded-lg hover:border-red-500/30 dark:hover:border-red-500/30 transition-all group duration-300">
+                <div class="text-red-500 font-mono text-xs mb-4 group-hover:text-red-600 dark:group-hover:text-white transition-colors">02 / RENDIMIENTO</div>
+                <h3 class="text-xl font-bold mb-3 uppercase tracking-tight">Alta Precisión</h3>
+                <p class="text-gray-500 dark:text-gray-400 text-sm leading-relaxed">
+                    Componentes electrónicos y mecánicos validados bajo los más estrictos estándares del sector.
+                </p>
+            </div>
+
+            <div class="border border-gray-200 bg-gray-50 dark:border-gray-900 dark:bg-gray-950/50 p-8 rounded-lg hover:border-red-500/30 dark:hover:border-red-500/30 transition-all group duration-300">
+                <div class="text-red-500 font-mono text-xs mb-4 group-hover:text-red-600 dark:group-hover:text-white transition-colors">03 / INTEGRACIÓN</div>
+                <h3 class="text-xl font-bold mb-3 uppercase tracking-tight">Ecosistema Digital</h3>
+                <p class="text-gray-500 dark:text-gray-400 text-sm leading-relaxed">
+                    Plataforma optimizada con arquitectura reactiva para consultas rápidas y flujos eficientes.
+                </p>
+            </div>
+            
+        </section>
+    </main>
+
+    <div id="footer-contenedor"></div>
+
+    <script src="config.js"></script>
+
+    <script>
+        // 1. PERSISTENCIA DE APARIENCIA: Cargar el tema guardado por el usuario
+        const temaGuardado = localStorage.getItem('tema_apariencia');
+        if (temaGuardado === 'dark' || (!temaGuardado && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.documentElement.classList.add('dark');
+        } else {
+            document.documentElement.classList.remove('dark');
+            corregirBotonClaro();
+        }
+
+        // 2. CONMUTAR APARIENCIA: Modifica el estado de la clase raíz
+        window.conmutarApariencia = function() {
+            const html = document.documentElement;
+            if (html.classList.contains('dark')) {
+                html.classList.remove('dark');
+                localStorage.setItem('tema_apariencia', 'light');
+            } else {
+                html.classList.add('dark');
+                localStorage.setItem('tema_apariencia', 'dark');
+            }
+            // Re-inicializamos el menú para refrescar el estado del botón
+            inicializarEcosistema();
+        }
+
+        // Auxiliar para corregir el string de la interfaz en modo claro
+        function corregirBotonClaro() {
+            setTimeout(() => {
+                const btn = document.getElementById('btn-apariencia');
+                if (btn && !document.documentElement.classList.contains('dark')) {
+                    btn.innerText = "Modo Oscuro 🌙";
+                }
+            }, 80);
+        }
+
+        // 3. CARGA MAESTRA DE COMPONENTES (Header + Footer + Supabase Auth)
+        async function inicializarEcosistema() {
+            try {
+                // Inyectar el menú unificado
+                const respHeader = await fetch('components/header.html');
+                document.getElementById('header-contenedor').innerHTML = await respHeader.text();
+                corregirBotonClaro();
+
+                // Inyectar el pie de página unificado
+                const respFooter = await fetch('components/footer.html');
+                document.getElementById('footer-contenedor').innerHTML = await respFooter.text();
+
+                // Consultar estado de sesión en la base de datos de Supabase
+                const supabaseClient = supabase.createClient(CONFIG.SUPABASE_URL, CONFIG.SUPABASE_ANON_KEY);
+                const { data: { session } } = await supabaseClient.auth.getSession();
+                
+                if (session) {
+                    const saludoNav = document.getElementById('saludo-nav');
+                    const nombreUsuario = session.user.email.split('@')[0];
+
+                    // Pintar el saludo dinámico debajo de Torres Aguayo
+                    saludoNav.innerText = `Bienvenido, ${nombreUsuario}`;
+                    saludoNav.classList.remove('opacity-0');
+                    saludoNav.classList.add('opacity-100');
+                }
+            } catch (error) {
+                console.error("Error crítico sincronizando el ecosistema:", error);
+            }
+        }
+
+        // Ejecutar al cargar la página
+        inicializarEcosistema();
+    </script>
+
+</body>
+</html>

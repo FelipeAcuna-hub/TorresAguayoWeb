@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Torres Aguayo — Checkout</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class', // Control por clase en <html>
+        }
+    </script>
+</head>
+
+<body class="bg-white text-black dark:bg-black dark:text-white antialiased font-sans flex flex-col min-h-screen transition-colors duration-300">
+
+    <div id="header-contenedor" class="sticky top-0 z-50"></div>
+
+    <main class="flex-grow max-w-6xl w-full mx-auto px-6 pt-12 pb-24 grid grid-cols-1 lg:grid-cols-3 gap-12 items-start">
+        
+        <div class="lg:col-span-2 space-y-8">
+            
+            <section class="border border-gray-200 bg-gray-50 dark:border-gray-900 dark:bg-gray-950/40 p-6 rounded-lg transition-colors duration-300">
+                <h2 class="text-xl font-black tracking-tighter uppercase italic mb-6 text-red-500">Tu Pedido</h2>
+                <div id="lista-carrito" class="space-y-4">
+                    </div>
+            </section>
+
+            <section class="border border-gray-200 bg-gray-50 dark:border-gray-900 dark:bg-gray-950/40 p-6 rounded-lg transition-colors duration-300">
+                <h2 class="text-xl font-black tracking-tighter uppercase italic mb-6">Datos de Despacho</h2>
+                <form id="form-despacho" class="grid grid-cols-1 sm:grid-cols-2 gap-4 font-mono text-xs">
+                    <div class="sm:col-span-2">
+                        <label class="block text-gray-500 dark:text-gray-400 uppercase mb-1">Nombre Completo</label>
+                        <input type="text" required class="w-full bg-zinc-100 border border-zinc-300 dark:bg-zinc-900 dark:border-zinc-800 rounded p-3 focus:outline-none focus:border-red-500 text-black dark:text-white transition-colors">
+                    </div>
+                    <div>
+                        <label class="block text-gray-500 dark:text-gray-400 uppercase mb-1">Rut</label>
+                        <input type="text" placeholder="12.345.678-9" required class="w-full bg-zinc-100 border border-zinc-300 dark:bg-zinc-900 dark:border-zinc-800 rounded p-3 focus:outline-none focus:border-red-500 text-black dark:text-white transition-colors">
+                    </div>
+                    <div>
+                        <label class="block text-gray-500 dark:text-gray-400 uppercase mb-1">Teléfono de Contacto</label>
+                        <input type="tel" placeholder="912345678" required class="w-full bg-zinc-100 border border-zinc-300 dark:bg-zinc-900 dark:border-zinc-800 rounded p-3 focus:outline-none focus:border-red-500 text-black dark:text-white transition-colors">
+                    </div>
+                    <div>
+                        <label class="block text-gray-500 dark:text-gray-400 uppercase mb-1">Región</label>
+                        <input type="text" required class="w-full bg-zinc-100 border border-zinc-300 dark:bg-zinc-900 dark:border-zinc-800 rounded p-3 focus:outline-none focus:border-red-500 text-black dark:text-white transition-colors">
+                    </div>
+                    <div>
+                        <label class="block text-gray-500 dark:text-gray-400 uppercase mb-1">Comuna</label>
+                        <input type="text" required class="w-full bg-zinc-100 border border-zinc-300 dark:bg-zinc-900 dark:border-zinc-800 rounded p-3 focus:outline-none focus:border-red-500 text-black dark:text-white transition-colors">
+                    </div>
+                    <div class="sm:col-span-2">
+                        <label class="block text-gray-500 dark:text-gray-400 uppercase mb-1">Dirección (Calle, Número, Departamento)</label>
+                        <input type="text" required class="w-full bg-zinc-100 border border-zinc-300 dark:bg-zinc-900 dark:border-zinc-800 rounded p-3 focus:outline-none focus:border-red-500 text-black dark:text-white transition-colors">
+                    </div>
+                </form>
+            </section>
+        </div>
+
+        <div class="border border-gray-200 bg-gray-50 dark:border-gray-900 dark:bg-gray-950/60 p-6 rounded-lg space-y-6 font-mono text-xs transition-colors duration-300">
+            <h2 class="text-xl font-black font-sans tracking-tighter uppercase italic text-black dark:text-white border-b border-gray-200 dark:border-gray-900 pb-4">Resumen</h2>
+            
+            <div class="space-y-3">
+                <div class="flex justify-between text-gray-600 dark:text-gray-400">
+                    <span>Subtotal Neto:</span>
+                    <span id="subtotal" class="text-black dark:text-white">$0</span>
+                </div>
+                <div class="flex justify-between text-gray-600 dark:text-gray-400">
+                    <span>Costo de Envío:</span>
+                    <span id="envio" class="text-black dark:text-white">$5.500</span>
+                </div>
+                <div class="flex justify-between text-gray-600 dark:text-gray-400 border-b border-gray-200 dark:border-gray-900 pb-3">
+                    <span>IVA (19%):</span>
+                    <span id="iva" class="text-black dark:text-white">$0</span>
+                </div>
+                <div class="flex justify-between text-lg font-bold text-red-500 dark:text-red-400 font-sans pt-2">
+                    <span>TOTAL:</span>
+                    <span id="total">$0</span>
+                </div>
+            </div>
+
+            <button onclick="procesarPagoReal()" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold text-sm font-sans tracking-widest py-4 rounded transition-all uppercase shadow-[0_4px_20px_rgba(220,38,38,0.15)]">
+                Proceder al Pago
+            </button>
+        </div>
+
+    </main>
+
+    <div id="footer-contenedor"></div>
+
+    <script src="config.js"></script>
+
+    <script>
+        const listaContenedor = document.getElementById('lista-carrito');
+        const subtotalTxt = document.getElementById('subtotal');
+        const ivaTxt = document.getElementById('iva');
+        const totalTxt = document.getElementById('total');
+
+        // Costo fijo base de envío para Chile central
+        const costoEnvio = 5500; 
+
+        // 1. PERSISTENCIA DE APARIENCIA
+        const temaGuardado = localStorage.getItem('tema_apariencia');
+        if (temaGuardado === 'dark' || (!temaGuardado && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.documentElement.classList.add('dark');
+        } else {
+            document.documentElement.classList.remove('dark');
+            corregirBotonClaro();
+        }
+
+        window.conmutarApariencia = function() {
+            const html = document.documentElement;
+            if (html.classList.contains('dark')) {
+                html.classList.remove('dark');
+                localStorage.setItem('tema_apariencia', 'light');
+            } else {
+                html.classList.add('dark');
+                localStorage.setItem('tema_apariencia', 'dark');
+            }
+            inicializarEcosistema();
+        }
+
+        function corregirBotonClaro() {
+            setTimeout(() => {
+                const btn = document.getElementById('btn-apariencia');
+                if (btn && !document.documentElement.classList.contains('dark')) {
+                    btn.innerText = "Modo Oscuro 🌙";
+                }
+            }, 80);
+        }
+
+        // 2. CARGA DEL CARRITO DE COMPRAS DE LOCALSTORAGE
+        function cargarCarrito() {
+            const seleccionados = JSON.parse(localStorage.getItem('carrito_seleccion')) || [];
+            
+            fetch('productos.json')
+                .then(res => res.json())
+                .then(productos => {
+                    const productosEnCarrito = productos.filter(p => seleccionados.includes(p.id));
+                    
+                    if (productosEnCarrito.length === 0) {
+                        listaContenedor.innerHTML = '<p class="text-gray-500 uppercase tracking-wider text-xs py-4">El carrito está vacío.</p>';
+                        subtotalTxt.innerText = "$0";
+                        ivaTxt.innerText = "$0";
+                        totalTxt.innerText = "$0";
+                        return;
+                    }
+
+                    listaContenedor.innerHTML = '';
+                    let sumaSubtotal = 0;
+
+                    productosEnCarrito.forEach(prod => {
+                        sumaSubtotal += prod.precio;
+                        listaContenedor.innerHTML += `
+                            <div class="flex justify-between items-center border-b border-gray-200 dark:border-gray-900 pb-3">
+                                <div class="flex items-center space-x-4">
+                                    <img src="${prod.imagen}" class="w-12 h-12 object-cover rounded border border-gray-300 dark:border-zinc-800">
+                                    <div>
+                                        <h4 class="font-bold text-sm uppercase text-black dark:text-white">${prod.nombre}</h4>
+                                        <p class="text-[10px] text-gray-500 font-mono">SKU: #${prod.id}</p>
+                                    </div>
+                                </div>
+                                <span class="font-mono text-sm font-bold text-red-500 dark:text-red-400">$${prod.precio.toLocaleString('es-CL')}</span>
+                            </div>
+                        `;
+                    });
+
+                    const calculoIva = Math.round(sumaSubtotal * 0.19);
+                    const totalFinal = sumaSubtotal + calculoIva + costoEnvio;
+
+                    subtotalTxt.innerText = `$${sumaSubtotal.toLocaleString('es-CL')}`;
+                    ivaTxt.innerText = `$${calculoIva.toLocaleString('es-CL')}`;
+                    totalTxt.innerText = `$${totalFinal.toLocaleString('es-CL')}`;
+                })
+                .catch(err => console.error("Error cargando productos en checkout:", err));
+        }
+
+        // 3. PROCESAR ACCIÓN DE PAGO AUTOMÁTICA
+        window.procesarPagoReal = function() {
+            const form = document.getElementById('form-despacho');
+            if(!form.checkValidity()) {
+                alert("Por favor, rellena todos los campos de despacho antes de pagar.");
+                form.reportValidity();
+                return;
+            }
+            alert("Redirigiendo de forma segura a Pasarela de Pago Transbank Webpay...");
+        }
+
+        // 4. INICIALIZAR ECOSYSTEMA COMPLETO (Header + Footer + Saludo)
+        async function inicializarEcosistema() {
+            try {
+                // Inyectar Menú
+                const respHeader = await fetch('components/header.html');
+                document.getElementById('header-contenedor').innerHTML = await respHeader.text();
+                corregirBotonClaro();
+
+                // Destacar Pestaña CARRITO de forma dinámica
+                const linkCarrito = document.getElementById('link-carrito');
+                if (linkCarrito) {
+                    linkCarrito.className = "text-black dark:text-white border-b-2 border-black dark:border-white pb-1";
+                }
+
+                // Inyectar Footer
+                const respFooter = await fetch('components/footer.html');
+                document.getElementById('footer-contenedor').innerHTML = await respFooter.text();
+
+                // Consultar Auth en Supabase para el Saludo Nav
+                const supabaseClient = supabase.createClient(CONFIG.SUPABASE_URL, CONFIG.SUPABASE_ANON_KEY);
+                const { data: { session } } = await supabaseClient.auth.getSession();
+                
+                if (session) {
+                    const saludoNav = document.getElementById('saludo-nav');
+                    const nombreUsuario = session.user.email.split('@')[0];
+
+                    saludoNav.innerText = `Bienvenido, ${nombreUsuario}`;
+                    saludoNav.classList.remove('opacity-0');
+                    saludoNav.classList.add('opacity-100');
+                }
+            } catch (error) {
+                console.error("Error sincronizando el ecosistema modular:", error);
+            }
+        }
+
+        // Ejecuciones iniciales secuenciales
+        inicializarEcosistema();
+        cargarCarrito();
+    </script>
+</body>
+
+</html>

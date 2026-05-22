@@ -1,0 +1,5 @@
+// CONFIGURACIÓN GLOBAL DE CREDENCIALES — TORRES AGUAYO
+const CONFIG = {
+    SUPABASE_URL: "https://bdbpiaucsrrsdlykokdf.supabase.co", 
+    SUPABASE_ANON_KEY: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJkYnBpYXVjc3Jyc2RseWtva2RmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzkyODc2ODYsImV4cCI6MjA5NDg2MzY4Nn0.2HRWzoCBFpYDUs0Qk_vj9Z_0FAyEZbuu9czH3KY8JWc"            
+};
