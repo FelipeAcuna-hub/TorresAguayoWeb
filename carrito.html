@@ -8,9 +8,7 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
-        tailwind.config = {
-            darkMode: 'class', // Control por clase en <html>
-        }
+        tailwind.config = { darkMode: 'class' }
     </script>
 </head>
 
@@ -22,38 +20,72 @@
         
         <div class="lg:col-span-2 space-y-8">
             
-            <section class="border border-gray-200 bg-gray-50 dark:border-gray-900 dark:bg-gray-950/40 p-6 rounded-lg transition-colors duration-300">
+            <div id="status-sesion" class="border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-950 p-3 rounded font-mono text-[11px] uppercase tracking-wider"></div>
+            
+            <section class="border border-gray-200 bg-gray-50/50 dark:border-gray-900 dark:bg-gray-950/40 p-6 rounded-lg transition-colors">
                 <h2 class="text-xl font-black tracking-tighter uppercase italic mb-6 text-red-500">Tu Pedido</h2>
-                <div id="lista-carrito" class="space-y-4">
-                    </div>
+                <div id="lista-carrito" class="space-y-4"></div>
             </section>
 
-            <section class="border border-gray-200 bg-gray-50 dark:border-gray-900 dark:bg-gray-950/40 p-6 rounded-lg transition-colors duration-300">
-                <h2 class="text-xl font-black tracking-tighter uppercase italic mb-6">Datos de Despacho</h2>
-                <form id="form-despacho" class="grid grid-cols-1 sm:grid-cols-2 gap-4 font-mono text-xs">
-                    <div class="sm:col-span-2">
-                        <label class="block text-gray-500 dark:text-gray-400 uppercase mb-1">Nombre Completo</label>
-                        <input type="text" required class="w-full bg-zinc-100 border border-zinc-300 dark:bg-zinc-900 dark:border-zinc-800 rounded p-3 focus:outline-none focus:border-red-500 text-black dark:text-white transition-colors">
+            <section class="border border-gray-200 bg-gray-50/50 dark:border-gray-900 dark:bg-gray-950/40 p-6 rounded-lg transition-colors">
+                <h2 class="text-xl font-black tracking-tighter uppercase italic mb-4">Tipo de Documento</h2>
+                <div class="flex gap-6 font-mono text-xs">
+                    <label class="flex items-center gap-2 cursor-pointer text-black dark:text-white font-bold">
+                        <input type="radio" name="tipo-documento" value="boleta" checked onclick="conmutarDocumento('boleta')" class="accent-red-500 w-4 h-4">
+                        BOLETA DE VENTA
+                    </label>
+                    <label class="flex items-center gap-2 cursor-pointer text-black dark:text-white font-bold">
+                        <input type="radio" name="tipo-documento" value="factura" onclick="conmutarDocumento('factura')" class="accent-red-500 w-4 h-4">
+                        FACTURA ELECTRÓNICA
+                    </label>
+                </div>
+
+                <div id="campos-factura" class="hidden grid grid-cols-1 sm:grid-cols-2 gap-4 font-mono text-xs pt-6 border-t border-gray-200 dark:border-gray-900 mt-4 transition-all">
+                    <div>
+                        <label class="block text-red-500 uppercase mb-1 text-[10px] font-bold">Razón Social Empresa</label>
+                        <input type="text" id="f-razon" class="w-full bg-white dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-800 rounded p-3 focus:outline-none focus:border-red-500 text-black dark:text-white uppercase">
                     </div>
                     <div>
-                        <label class="block text-gray-500 dark:text-gray-400 uppercase mb-1">Rut</label>
-                        <input type="text" placeholder="12.345.678-9" required class="w-full bg-zinc-100 border border-zinc-300 dark:bg-zinc-900 dark:border-zinc-800 rounded p-3 focus:outline-none focus:border-red-500 text-black dark:text-white transition-colors">
+                        <label class="block text-red-500 uppercase mb-1 text-[10px] font-bold">RUT Empresa</label>
+                        <input type="text" id="f-rut-empresa" placeholder="76.123.456-K" class="w-full bg-white dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-800 rounded p-3 focus:outline-none focus:border-red-500 text-black dark:text-white">
+                    </div>
+                    <div class="sm:col-span-2">
+                        <label class="block text-red-500 uppercase mb-1 text-[10px] font-bold">Giro Comercial</label>
+                        <input type="text" id="f-giro" class="w-full bg-white dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-800 rounded p-3 focus:outline-none focus:border-red-500 text-black dark:text-white uppercase">
+                    </div>
+                </div>
+            </section>
+
+            <section class="border border-gray-200 bg-gray-50/50 dark:border-gray-900 dark:bg-gray-950/40 p-6 rounded-lg transition-colors">
+                <h2 class="text-xl font-black tracking-tighter uppercase italic mb-6">Datos de Despacho y Contacto</h2>
+                <form id="form-despacho" class="grid grid-cols-1 sm:grid-cols-2 gap-4 font-mono text-xs">
+                    <div>
+                        <label class="block text-gray-500 dark:text-gray-400 uppercase mb-1">Nombre Completo</label>
+                        <input type="text" id="d-nombre" required class="w-full bg-white dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-800 rounded p-3 focus:outline-none focus:border-red-500 text-black dark:text-white transition-colors uppercase">
+                    </div>
+                    <div>
+                        <label class="block text-gray-500 dark:text-gray-400 uppercase mb-1">Correo Electrónico</label>
+                        <input type="email" id="d-email" required placeholder="nombre@correo.com" class="w-full bg-white dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-800 rounded p-3 focus:outline-none focus:border-red-500 text-black dark:text-white transition-colors">
+                    </div>
+                    <div>
+                        <label class="block text-gray-500 dark:text-gray-400 uppercase mb-1">RUT Personal</label>
+                        <input type="text" id="d-rut" placeholder="12.345.678-9" required class="w-full bg-white dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-800 rounded p-3 focus:outline-none focus:border-red-500 text-black dark:text-white transition-colors">
                     </div>
                     <div>
                         <label class="block text-gray-500 dark:text-gray-400 uppercase mb-1">Teléfono de Contacto</label>
-                        <input type="tel" placeholder="912345678" required class="w-full bg-zinc-100 border border-zinc-300 dark:bg-zinc-900 dark:border-zinc-800 rounded p-3 focus:outline-none focus:border-red-500 text-black dark:text-white transition-colors">
+                        <input type="tel" id="d-telefono" placeholder="912345678" required class="w-full bg-white dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-800 rounded p-3 focus:outline-none focus:border-red-500 text-black dark:text-white transition-colors">
                     </div>
                     <div>
                         <label class="block text-gray-500 dark:text-gray-400 uppercase mb-1">Región</label>
-                        <input type="text" required class="w-full bg-zinc-100 border border-zinc-300 dark:bg-zinc-900 dark:border-zinc-800 rounded p-3 focus:outline-none focus:border-red-500 text-black dark:text-white transition-colors">
+                        <input type="text" id="d-region" required class="w-full bg-white dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-800 rounded p-3 focus:outline-none focus:border-red-500 text-black dark:text-white transition-colors uppercase">
                     </div>
                     <div>
                         <label class="block text-gray-500 dark:text-gray-400 uppercase mb-1">Comuna</label>
-                        <input type="text" required class="w-full bg-zinc-100 border border-zinc-300 dark:bg-zinc-900 dark:border-zinc-800 rounded p-3 focus:outline-none focus:border-red-500 text-black dark:text-white transition-colors">
+                        <input type="text" id="d-comuna" required class="w-full bg-white dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-800 rounded p-3 focus:outline-none focus:border-red-500 text-black dark:text-white transition-colors uppercase">
                     </div>
                     <div class="sm:col-span-2">
-                        <label class="block text-gray-500 dark:text-gray-400 uppercase mb-1">Dirección (Calle, Número, Departamento)</label>
-                        <input type="text" required class="w-full bg-zinc-100 border border-zinc-300 dark:bg-zinc-900 dark:border-zinc-800 rounded p-3 focus:outline-none focus:border-red-500 text-black dark:text-white transition-colors">
+                        <label class="block text-gray-500 dark:text-gray-400 uppercase mb-1">Dirección (Calle, Número, Departamento/Oficina)</label>
+                        <input type="text" id="d-direccion" required class="w-full bg-white dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-800 rounded p-3 focus:outline-none focus:border-red-500 text-black dark:text-white transition-colors uppercase">
                     </div>
                 </form>
             </section>
@@ -81,7 +113,7 @@
                 </div>
             </div>
 
-            <button onclick="procesarPagoReal()" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold text-sm font-sans tracking-widest py-4 rounded transition-all uppercase shadow-[0_4px_20px_rgba(220,38,38,0.15)]">
+            <button onclick="procesarPagoEcommerce()" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold text-sm font-sans tracking-widest py-4 rounded transition-all uppercase shadow-[0_4px_20px_rgba(220,38,38,0.15)]">
                 Proceder al Pago
             </button>
         </div>
@@ -98,16 +130,227 @@
         const ivaTxt = document.getElementById('iva');
         const totalTxt = document.getElementById('total');
 
-        // Costo fijo base de envío para Chile central
         const costoEnvio = 5500; 
+        const supabaseClient = supabase.createClient(CONFIG.SUPABASE_URL, CONFIG.SUPABASE_ANON_KEY);
+        
+        let totalNetoGlobal = 0;
+        let emailUsuarioActivo = "invitado@torresaguayo.cl";
 
-        // 1. PERSISTENCIA DE APARIENCIA
+        // NORMALIZADOR: Lee el carro local de forma segura
+        function normalizarEstructuraCarrito() {
+            let crudo = localStorage.getItem('carrito_seleccion');
+            if (!crudo) return [];
+            let arreglo = JSON.parse(crudo);
+            
+            // Si el arreglo viene en formato de id suelto viejo, lo adaptamos al vuelo
+            if (arreglo.length > 0 && typeof arreglo[0] !== 'object') {
+                let estructurado = arreglo.map(id => ({ id: Number(id), cantidad: 1 }));
+                localStorage.setItem('carrito_seleccion', JSON.stringify(estructurado));
+                return estructurado;
+            }
+            return arreglo;
+        }
+
+        window.conmutarDocumento = function(tipo) {
+            const camposFactura = document.getElementById('campos-factura');
+            const fRazon = document.getElementById('f-razon');
+            const fRut = document.getElementById('f-rut-empresa');
+            const fGiro = document.getElementById('f-giro');
+
+            if (tipo === 'factura') {
+                camposFactura.classList.remove('hidden');
+                fRazon.required = true;
+                fRut.required = true;
+                fGiro.required = true;
+            } else {
+                camposFactura.classList.add('hidden');
+                fRazon.required = false;
+                fRut.required = false;
+                fGiro.required = false;
+            }
+        }
+
+        async function cargarCarrito() {
+            const carrito = normalizarEstructuraCarrito();
+            
+            try {
+                const { data: productos, error } = await supabaseClient.from('productos').select('*');
+                if (error) throw error;
+
+                const idsEnCarro = carrito.map(item => Number(item.id));
+                const productosFiltrados = productos.filter(p => idsEnCarro.includes(Number(p.id)));
+                
+                if (productosFiltrados.length === 0) {
+                    listaContenedor.innerHTML = '<p class="text-gray-400 uppercase tracking-wider text-[10px] font-mono py-4">El carrito de despacho está vacío.</p>';
+                    subtotalTxt.innerText = "$0";
+                    ivaTxt.innerText = "$0";
+                    totalTxt.innerText = "$0";
+                    return;
+                }
+
+                listaContenedor.innerHTML = '';
+                totalNetoGlobal = 0;
+
+                productosFiltrados.forEach(prod => {
+                    const itemCarro = carrito.find(item => Number(item.id) === Number(prod.id));
+                    const cantidad = itemCarro ? itemCarro.cantidad : 1;
+                    const costoAcumuladoItem = prod.precio * cantidad;
+                    totalNetoGlobal += costoAcumuladoItem;
+
+                    listaContenedor.innerHTML += `
+                        <div class="flex flex-col sm:flex-row justify-between sm:items-center border-b border-gray-200 dark:border-gray-900 pb-4 pt-2 gap-4 transition-colors">
+                            <div class="flex items-center space-x-4">
+                                <img src="${prod.imagen}" class="w-12 h-12 object-contain rounded border border-gray-200 dark:border-zinc-800 bg-white">
+                                <div>
+                                    <h4 class="font-bold text-sm uppercase text-black dark:text-white leading-tight">${prod.nombre}</h4>
+                                    <p class="text-[10px] text-gray-400 font-mono mt-0.5">SKU: #00${prod.id}</p>
+                                </div>
+                            </div>
+                            <div class="flex items-center justify-between sm:justify-end gap-6">
+                                <div class="flex items-center border border-zinc-300 dark:border-zinc-800 rounded bg-zinc-100 dark:bg-zinc-900 font-mono text-xs overflow-hidden">
+                                    <button onclick="alterarUnidades(${prod.id}, -1)" class="px-3 py-1 text-gray-500 hover:text-red-500 hover:bg-zinc-200 dark:hover:bg-zinc-800 transition font-bold select-none">-</button>
+                                    <span class="px-3 py-1 bg-white dark:bg-black font-bold text-black dark:text-white min-w-[24px] text-center">${canvas = cantidad}</span>
+                                    <button onclick="alterarUnidades(${prod.id}, 1)" class="px-3 py-1 text-gray-500 hover:text-red-500 hover:bg-zinc-200 dark:hover:bg-zinc-800 transition font-bold select-none">+</button>
+                                </div>
+                                <div class="text-right min-w-[100px]">
+                                    <span class="font-mono text-sm font-bold text-red-500 dark:text-red-400 block">$${costoAcumuladoItem.toLocaleString('es-CL')}</span>
+                                    <button onclick="eliminarDelCarro(${prod.id})" class="text-[10px] text-gray-400 hover:text-red-500 underline transition uppercase font-sans tracking-wide mt-0.5">Eliminar</button>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                });
+
+                const calculoIva = Math.round(totalNetoGlobal * 0.19);
+                const totalFinal = totalNetoGlobal + calculoIva + costoEnvio;
+
+                subtotalTxt.innerText = `$${totalNetoGlobal.toLocaleString('es-CL')}`;
+                ivaTxt.innerText = `$${calculoIva.toLocaleString('es-CL')}`;
+                totalTxt.innerText = `$${totalFinal.toLocaleString('es-CL')}`;
+
+            } catch (err) { console.error("Error cargando el carro:", err); }
+        }
+
+        window.alterarUnidades = function(id, cambio) {
+            let carrito = normalizarEstructuraCarrito();
+            const item = carrito.find(i => Number(i.id) === Number(id));
+            if (item) {
+                item.cantidad += cambio;
+                if (item.cantidad < 1) return eliminarDelCarro(id);
+                localStorage.setItem('carrito_seleccion', JSON.stringify(carrito));
+                cargarCarrito();
+                actualizarBadgeHeader();
+            }
+        }
+
+        window.eliminarDelCarro = function(id) {
+            let carrito = normalizarEstructuraCarrito();
+            let nuevoCarrito = carrito.filter(item => Number(item.id) !== Number(id));
+            localStorage.setItem('carrito_seleccion', JSON.stringify(nuevoCarrito));
+            cargarCarrito();
+            actualizarBadgeHeader();
+        }
+
+        function actualizarBadgeHeader() {
+            const badgeCarrito = document.getElementById('badge-carrito');
+            const actuales = normalizarEstructuraCarrito();
+            if (badgeCarrito) {
+                if (actuales.length > 0) {
+                    badgeCarrito.innerText = `${actuales.length} SELECCIONADOS`;
+                    badgeCarrito.classList.remove('scale-0');
+                    badgeCarrito.classList.add('scale-100');
+                } else {
+                    badgeCarrito.classList.remove('scale-100');
+                    badgeCarrito.classList.add('scale-0');
+                }
+            }
+        }
+
+        window.procesarPagoEcommerce = async function() {
+            const formDespacho = document.getElementById('form-despacho');
+            
+            if (!formDespacho.checkValidity()) {
+                alert("Por favor, rellena todos los campos obligatorios de despacho.");
+                formDespacho.reportValidity();
+                return;
+            }
+
+            const tipoDoc = document.querySelector('input[name="tipo-documento"]:checked').value;
+            if (tipoDoc === 'factura') {
+                if (!document.getElementById('f-razon').value || !document.getElementById('f-rut-empresa').value || !document.getElementById('f-giro').value) {
+                    alert("Por favor, completa los campos de facturación tributaria Empresa.");
+                    return;
+                }
+            }
+
+            const emailComprador = document.getElementById('d-email').value.trim();
+            const comuna = document.getElementById('d-comuna').value.trim();
+
+            try {
+                const { error } = await supabaseClient
+                    .from('ventas')
+                    .insert([{
+                        cliente_email: emailComprador,
+                        total_neto: totalNetoGlobal,
+                        comuna_despacho: comuna,
+                        estado: `Aprobado (${tipoDoc.toUpperCase()})`
+                    }]);
+
+                if (error) throw error;
+
+                alert(`¡Orden procesada con éxito como ${tipoDoc.toUpperCase()}!\nRedirigiendo de forma segura...`);
+                localStorage.removeItem('carrito_seleccion');
+                window.location.href = "catalogo.html";
+
+            } catch (err) {
+                alert("Error de base de datos: " + err.message);
+            }
+        }
+
+        // MOTOR DE CARGA INTEGRADO DE NAVBAR EXTERNA
+        async function sincronizarEcosistemaCarrito() {
+            try {
+                // Levantamos dinámicamente tu header nativo
+                const respHeader = await fetch('components/header.html');
+                document.getElementById('header-contenedor').innerHTML = await respHeader.text();
+                
+                const linkCarrito = document.getElementById('link-carrito');
+                if (linkCarrito) {
+                    linkCarrito.className = "text-black dark:text-white border-b-2 border-black dark:border-white pb-1";
+                }
+
+                // Levantamos el footer nativo
+                const respFooter = await fetch('components/footer.html');
+                document.getElementById('footer-contenedor').innerHTML = await respFooter.text();
+
+                // Analizamos sesión
+                const statusBox = document.getElementById('status-sesion');
+                const { data: { session } } = await supabaseClient.auth.getSession();
+
+                if (session) {
+                    emailUsuarioActivo = session.user.email;
+                    document.getElementById('d-email').value = emailUsuarioActivo;
+                    statusBox.innerHTML = `Sesión Activa: <span class="text-green-500 font-bold">${emailUsuarioActivo}</span>`;
+                    statusBox.className = "border border-green-500/20 bg-green-500/5 text-green-600 dark:text-green-400 p-3 rounded font-mono text-[11px] uppercase tracking-wider";
+                } else {
+                    statusBox.innerHTML = `Navegando en <span class="text-amber-500 font-bold">Modo Invitado 👤</span> (No requieres cuenta para comprar)`;
+                    statusBox.className = "border border-amber-500/20 bg-amber-500/5 text-amber-600 dark:text-amber-400 p-3 rounded font-mono text-[11px] uppercase tracking-wider";
+                }
+
+                actualizarBadgeHeader();
+                cargarCarrito();
+
+            } catch (err) {
+                console.error("Error levantando módulos de interfaz:", err);
+            }
+        }
+
+        // Control lumínico
         const temaGuardado = localStorage.getItem('tema_apariencia');
         if (temaGuardado === 'dark' || (!temaGuardado && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
             document.documentElement.classList.add('dark');
         } else {
             document.documentElement.classList.remove('dark');
-            corregirBotonClaro();
         }
 
         window.conmutarApariencia = function() {
@@ -119,113 +362,11 @@
                 html.classList.add('dark');
                 localStorage.setItem('tema_apariencia', 'dark');
             }
-            inicializarEcosistema();
+            sincronizarEcosistemaCarrito();
         }
 
-        function corregirBotonClaro() {
-            setTimeout(() => {
-                const btn = document.getElementById('btn-apariencia');
-                if (btn && !document.documentElement.classList.contains('dark')) {
-                    btn.innerText = "Modo Oscuro 🌙";
-                }
-            }, 80);
-        }
-
-        // 2. CARGA DEL CARRITO DE COMPRAS DE LOCALSTORAGE
-        function cargarCarrito() {
-            const seleccionados = JSON.parse(localStorage.getItem('carrito_seleccion')) || [];
-            
-            fetch('productos.json')
-                .then(res => res.json())
-                .then(productos => {
-                    const productosEnCarrito = productos.filter(p => seleccionados.includes(p.id));
-                    
-                    if (productosEnCarrito.length === 0) {
-                        listaContenedor.innerHTML = '<p class="text-gray-500 uppercase tracking-wider text-xs py-4">El carrito está vacío.</p>';
-                        subtotalTxt.innerText = "$0";
-                        ivaTxt.innerText = "$0";
-                        totalTxt.innerText = "$0";
-                        return;
-                    }
-
-                    listaContenedor.innerHTML = '';
-                    let sumaSubtotal = 0;
-
-                    productosEnCarrito.forEach(prod => {
-                        sumaSubtotal += prod.precio;
-                        listaContenedor.innerHTML += `
-                            <div class="flex justify-between items-center border-b border-gray-200 dark:border-gray-900 pb-3">
-                                <div class="flex items-center space-x-4">
-                                    <img src="${prod.imagen}" class="w-12 h-12 object-cover rounded border border-gray-300 dark:border-zinc-800">
-                                    <div>
-                                        <h4 class="font-bold text-sm uppercase text-black dark:text-white">${prod.nombre}</h4>
-                                        <p class="text-[10px] text-gray-500 font-mono">SKU: #${prod.id}</p>
-                                    </div>
-                                </div>
-                                <span class="font-mono text-sm font-bold text-red-500 dark:text-red-400">$${prod.precio.toLocaleString('es-CL')}</span>
-                            </div>
-                        `;
-                    });
-
-                    const calculoIva = Math.round(sumaSubtotal * 0.19);
-                    const totalFinal = sumaSubtotal + calculoIva + costoEnvio;
-
-                    subtotalTxt.innerText = `$${sumaSubtotal.toLocaleString('es-CL')}`;
-                    ivaTxt.innerText = `$${calculoIva.toLocaleString('es-CL')}`;
-                    totalTxt.innerText = `$${totalFinal.toLocaleString('es-CL')}`;
-                })
-                .catch(err => console.error("Error cargando productos en checkout:", err));
-        }
-
-        // 3. PROCESAR ACCIÓN DE PAGO AUTOMÁTICA
-        window.procesarPagoReal = function() {
-            const form = document.getElementById('form-despacho');
-            if(!form.checkValidity()) {
-                alert("Por favor, rellena todos los campos de despacho antes de pagar.");
-                form.reportValidity();
-                return;
-            }
-            alert("Redirigiendo de forma segura a Pasarela de Pago Transbank Webpay...");
-        }
-
-        // 4. INICIALIZAR ECOSYSTEMA COMPLETO (Header + Footer + Saludo)
-        async function inicializarEcosistema() {
-            try {
-                // Inyectar Menú
-                const respHeader = await fetch('components/header.html');
-                document.getElementById('header-contenedor').innerHTML = await respHeader.text();
-                corregirBotonClaro();
-
-                // Destacar Pestaña CARRITO de forma dinámica
-                const linkCarrito = document.getElementById('link-carrito');
-                if (linkCarrito) {
-                    linkCarrito.className = "text-black dark:text-white border-b-2 border-black dark:border-white pb-1";
-                }
-
-                // Inyectar Footer
-                const respFooter = await fetch('components/footer.html');
-                document.getElementById('footer-contenedor').innerHTML = await respFooter.text();
-
-                // Consultar Auth en Supabase para el Saludo Nav
-                const supabaseClient = supabase.createClient(CONFIG.SUPABASE_URL, CONFIG.SUPABASE_ANON_KEY);
-                const { data: { session } } = await supabaseClient.auth.getSession();
-                
-                if (session) {
-                    const saludoNav = document.getElementById('saludo-nav');
-                    const nombreUsuario = session.user.email.split('@')[0];
-
-                    saludoNav.innerText = `Bienvenido, ${nombreUsuario}`;
-                    saludoNav.classList.remove('opacity-0');
-                    saludoNav.classList.add('opacity-100');
-                }
-            } catch (error) {
-                console.error("Error sincronizando el ecosistema modular:", error);
-            }
-        }
-
-        // Ejecuciones iniciales secuenciales
-        inicializarEcosistema();
-        cargarCarrito();
+        // Arranque controlado definitivo
+        sincronizarEcosistemaCarrito();
     </script>
 </body>
 

@@ -39,18 +39,27 @@
                     class="w-full bg-zinc-100 border border-zinc-300 dark:bg-zinc-950 dark:border-zinc-800 rounded px-4 py-2 font-mono text-xs tracking-wider text-black dark:text-white placeholder-zinc-400 dark:placeholder-zinc-600 focus:outline-none focus:border-red-500 transition uppercase">
             </div>
 
-            <div id="contenedor-botones-filtros" class="flex flex-wrap gap-2 font-mono text-[11px] tracking-wider w-full md:w-auto justify-start md:justify-end">
-                <button onclick="cambiarCategoria('todos')" id="btn-todos" class="px-4 py-2 rounded border font-bold uppercase transition bg-black text-white border-black dark:bg-white dark:text-black dark:border-white">
+            <div id="contenedor-botones-filtros"
+                class="flex flex-wrap gap-2 font-mono text-[11px] tracking-wider w-full md:w-auto justify-start md:justify-end">
+                <button onclick="cambiarCategoria('todos')" id="btn-todos"
+                    class="px-4 py-2 rounded border font-bold uppercase transition bg-black text-white border-black dark:bg-white dark:text-black dark:border-white">
                     Todos [■]
                 </button>
-                <button onclick="cambiarCategoria('iluminacion')" id="btn-iluminacion" class="px-4 py-2 rounded border font-bold uppercase transition bg-transparent text-gray-500 border-zinc-300 dark:text-gray-400 dark:border-zinc-800 hover:text-black dark:hover:text-white hover:border-zinc-400 dark:hover:border-zinc-600">
+                <button onclick="cambiarCategoria('iluminacion')" id="btn-iluminacion"
+                    class="px-4 py-2 rounded border font-bold uppercase transition bg-transparent text-gray-500 border-zinc-300 dark:text-gray-400 dark:border-zinc-800 hover:text-black dark:hover:text-white hover:border-zinc-400 dark:hover:border-zinc-600">
                     Iluminación
                 </button>
-                <button onclick="cambiarCategoria('electronica')" id="btn-electronica" class="px-4 py-2 rounded border font-bold uppercase transition bg-transparent text-gray-500 border-zinc-300 dark:text-gray-400 dark:border-zinc-800 hover:text-black dark:hover:text-white hover:border-zinc-400 dark:hover:border-zinc-600">
+                <button onclick="cambiarCategoria('electronica')" id="btn-electronica"
+                    class="px-4 py-2 rounded border font-bold uppercase transition bg-transparent text-gray-500 border-zinc-300 dark:text-gray-400 dark:border-zinc-800 hover:text-black dark:hover:text-white hover:border-zinc-400 dark:hover:border-zinc-600">
                     Electrónica
                 </button>
-                <button onclick="cambiarCategoria('accesorios')" id="btn-accesorios" class="px-4 py-2 rounded border font-bold uppercase transition bg-transparent text-gray-500 border-zinc-300 dark:text-gray-400 dark:border-zinc-800 hover:text-black dark:hover:text-white hover:border-zinc-400 dark:hover:border-zinc-600">
+                <button onclick="cambiarCategoria('accesorios')" id="btn-accesorios"
+                    class="px-4 py-2 rounded border font-bold uppercase transition bg-transparent text-gray-500 border-zinc-300 dark:text-gray-400 dark:border-zinc-800 hover:text-black dark:hover:text-white hover:border-zinc-400 dark:hover:border-zinc-600">
                     Accesorios
+                </button>
+                <button onclick="cambiarCategoria('scanners')" id="btn-scanners"
+                    class="px-4 py-2 rounded border font-bold uppercase transition bg-transparent text-gray-500 border-zinc-300 dark:text-gray-400 dark:border-zinc-800 hover:text-black dark:hover:text-white hover:border-zinc-400 dark:hover:border-zinc-600">
+                    Scanners
                 </button>
             </div>
         </div>
@@ -68,28 +77,40 @@
         const contador = document.getElementById('contador-items');
         const buscador = document.getElementById('buscador');
 
-        // Variables globales de control reactivo
         let todosLosProductos = [];
         let categoriaActiva = 'todos';
-        
-        // CORRECCIÓN TÉCNICA: Leemos la memoria del carro al entrar para mantener el estado visual
-        let seleccionados = JSON.parse(localStorage.getItem('carrito_seleccion')) || [];
+
+        // NORMALIZADOR LOCAL SEGURO: Garantiza que leamos siempre la estructura [{id, cantidad}]
+        function obtenerEstructuraCarritoLocal() {
+            let crudo = localStorage.getItem('carrito_seleccion');
+            if (!crudo) return [];
+            let arreglo = JSON.parse(crudo);
+            if (arreglo.length > 0 && typeof arreglo[0] !== 'object') {
+                return []; // Si el caché es del formato viejo, lo tratamos como vacío para evitar caídas
+            }
+            return arreglo;
+        }
 
         async function cargarCatalogo() {
             try {
-                const respuesta = await fetch('productos.json');
-                todosLosProductos = await respuesta.json();
+                const supabaseClient = supabase.createClient(CONFIG.SUPABASE_URL, CONFIG.SUPABASE_ANON_KEY);
 
-                // Renderizado inicial considerando persistencia de memoria
+                const { data, error } = await supabaseClient
+                    .from('productos')
+                    .select('*')
+                    .order('id', { ascending: true });
+
+                if (error) throw error;
+
+                todosLosProductos = data;
                 buscarYFiltrar();
 
             } catch (error) {
-                console.error("Error al cargar el archivo JSON de productos:", error);
+                console.error("Error al sincronizar con la tabla de Supabase:", error);
                 grilla.innerHTML = `<p class="text-gray-500 font-mono text-xs uppercase col-span-3">Error técnico al sincronizar el catálogo.</p>`;
             }
         }
 
-        // FUNCIÓN MAESTRA: Filtra por categoría y por texto al mismo tiempo
         window.buscarYFiltrar = function () {
             const textoBusqueda = buscador.value.toLowerCase().trim();
 
@@ -108,11 +129,9 @@
             renderizarProductos(listaFiltrada);
         }
 
-        // Cambia la categoría y recalcula el estado de los botones según la apariencia activa
         window.cambiarCategoria = function (nuevaCategoria) {
             categoriaActiva = nuevaCategoria;
-            const botones = ['todos', 'iluminacion', 'electronica', 'accesorios'];
-            
+            const botones = ['todos', 'iluminacion', 'electronica', 'accesorios', 'scanners'];
             const esDark = document.documentElement.classList.contains('dark');
 
             botones.forEach(cat => {
@@ -129,30 +148,31 @@
             buscarYFiltrar();
         }
 
-        // Agrega o quita un ítem de la selección (Toggle)
-        window.conmutarSeleccion = function(id) {
-            const index = seleccionados.indexOf(id);
+        // NUEVO MOTOR UNIFICADO: Añade de manera reactiva desde el catálogo directo
+        window.agregarAlCarritoDesdeCatalogo = function(productoId) {
+            const idNum = Number(productoId);
+            let actuales = obtenerEstructuraCarritoLocal();
             
-            if (index > -1) {
-                seleccionados.splice(index, 1);
+            const existe = actuales.find(item => Number(item.id) === idNum);
+            
+            if (!existe) {
+                actuales.push({ id: idNum, cantidad: 1 });
             } else {
-                seleccionados.push(id);
+                existe.cantidad += 1;
             }
-
-            // Sincronizamos con el localStorage para que el checkout lo lea
-            localStorage.setItem('carrito_seleccion', JSON.stringify(seleccionados));
-
-            // Actualizar el contador rojo dinámico integrado en el header.html externo
+            
+            localStorage.setItem('carrito_seleccion', JSON.stringify(actuales));
             actualizarBadgeHeader();
-            buscarYFiltrar();
+            buscarYFiltrar(); // Volvemos a dibujar para que cambie el estado visual del botón al instante
+            alert("¡Componente añadido al carro de despacho!");
         }
 
-        // Auxiliar que busca el badge flotante en el componente inyectado
         function actualizarBadgeHeader() {
             const badgeCarrito = document.getElementById('badge-carrito');
+            const actuales = obtenerEstructuraCarritoLocal();
             if (badgeCarrito) {
-                if (seleccionados.length > 0) {
-                    badgeCarrito.innerText = `${seleccionados.length} SELECCIONADOS`;
+                if (actuales.length > 0) {
+                    badgeCarrito.innerText = `${actuales.length} SELECCIONADOS`;
                     badgeCarrito.classList.remove('scale-0');
                     badgeCarrito.classList.add('scale-100');
                 } else {
@@ -162,7 +182,6 @@
             }
         }
 
-        // Dibuja las tarjetas adaptativas en pantalla
         function renderizarProductos(lista) {
             contador.innerText = `${lista.length} ITEMS MOSTRADOS`;
             grilla.innerHTML = '';
@@ -172,22 +191,27 @@
                 return;
             }
 
+            // Traemos el estado real del carro para pintar el estilo del botón
+            const carritoActual = obtenerEstructuraCarritoLocal();
+
             lista.forEach(prod => {
                 const displayId = prod.id.toString().slice(-4);
-                const esSeleccionado = seleccionados.includes(prod.id);
+                
+                // CORRECCIÓN: Buscamos si el ID del producto está dentro de nuestra lista de objetos del carro
+                const itemEnCarro = carritoActual.find(item => Number(item.id) === Number(prod.id));
+                const esSeleccionado = !!itemEnCarro; 
 
-                // Configuración cromática fluida para Modo Claro y Modo Oscuro
-                const claseTarjeta = esSeleccionado 
-                    ? "border-red-500 bg-zinc-50 dark:bg-zinc-950 p-6 rounded-lg transition-all flex flex-col justify-between shadow-[0_0_15px_rgba(239,68,68,0.15)] relative" 
-                    : "border-gray-200 bg-gray-50/50 dark:border-gray-900 dark:bg-gray-950/50 p-6 rounded-lg hover:border-red-500/30 dark:hover:border-red-500/30 transition-all group flex flex-col justify-between relative duration-300";
+                const claseTarjeta = esSeleccionado
+                    ? "border-red-500 bg-zinc-50 dark:bg-zinc-950 p-6 rounded-lg transition-all flex flex-col justify-between shadow-[0_0_15px_rgba(239,68,68,0.15)] relative border"
+                    : "border-gray-200 bg-gray-50/50 dark:border-gray-900 dark:bg-gray-950/50 p-6 rounded-lg hover:border-red-500/30 dark:hover:border-red-500/30 transition-all group flex flex-col justify-between relative duration-300 border";
 
                 const claseBoton = esSeleccionado
                     ? "bg-zinc-300 dark:bg-zinc-800 hover:bg-zinc-400 dark:hover:bg-zinc-700 text-red-600 dark:text-red-500 border border-red-500/30 font-bold text-xs tracking-wider px-4 py-2 rounded transition-all uppercase"
-                    : "bg-red-600 hover:bg-red-700 text-white font-bold text-xs tracking-wider px-4 py-2 rounded transition-all uppercase shadow-sm";
+                    : "bg-black hover:bg-zinc-800 dark:bg-white dark:text-black dark:hover:bg-zinc-200 text-white font-bold text-xs tracking-wider px-4 py-2 rounded transition-all uppercase shadow-sm";
 
-                const textoBoton = esSeleccionado ? "Quitar [✓]" : "Añadir";
-                const etiquetaSeleccionado = esSeleccionado 
-                    ? `<span class="absolute top-3 right-3 bg-red-600 text-white text-[9px] font-mono font-bold px-2 py-0.5 rounded uppercase tracking-wider">Marcado</span>`
+                const textoBoton = esSeleccionado ? `En Carro (${itemEnCarro.cantidad}) [+]` : "Añadir [+]";
+                const etiquetaSeleccionado = esSeleccionado
+                    ? `<span class="absolute top-3 right-3 bg-red-600 text-white text-[9px] font-mono font-bold px-2 py-0.5 rounded uppercase tracking-wider">Listo</span>`
                     : '';
 
                 let botonPdf = '';
@@ -204,7 +228,7 @@
                         ${etiquetaSeleccionado}
                         <div>
                             <a href="producto.html?id=${prod.id}" class="block h-44 bg-zinc-200 dark:bg-neutral-900 rounded-md mb-4 border border-zinc-300 dark:border-gray-800/40 overflow-hidden flex items-center justify-center">
-                                <img src="${prod.imagen}" alt="${prod.nombre}" class="w-full h-full object-cover ${esSeleccionado ? '' : 'group-hover:scale-105'} transition-transform duration-300">
+                                <img src="${prod.imagen}" alt="${prod.nombre}" class="w-full h-full object-contain ${esSeleccionado ? '' : 'group-hover:scale-105'} transition-transform duration-300">
                             </a>
                             
                             <div class="flex justify-between items-center mb-1">
@@ -222,7 +246,7 @@
                             ${botonPdf}
                             <div class="flex justify-between items-center pt-4 border-t border-gray-200 dark:border-gray-900/60">
                                 <span class="text-red-500 dark:text-red-400 font-mono font-bold text-lg">$${prod.precio.toLocaleString('es-CL')}</span>
-                                <button onclick="conmutarSeleccion(${prod.id})" class="${claseBoton}">
+                                <button onclick="agregarAlCarritoDesdeCatalogo(${prod.id})" class="${claseBoton}">
                                     ${textoBoton}
                                 </button>
                             </div>
@@ -232,16 +256,15 @@
             });
         }
 
-        // 5. CONTROL DE APARIENCIA COHERENTE CON EL SISTEMA
+        // 5. MANEJO DE APARIENCIA LUMÍNICA
         const temaGuardado = localStorage.getItem('tema_apariencia');
         if (temaGuardado === 'dark' || (!temaGuardado && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
             document.documentElement.classList.add('dark');
         } else {
             document.documentElement.classList.remove('dark');
-            corregirBotonClaro();
         }
 
-        window.conmutarApariencia = function() {
+        window.conmutarApariencia = function () {
             const html = document.documentElement;
             if (html.classList.contains('dark')) {
                 html.classList.remove('dark');
@@ -250,58 +273,21 @@
                 html.classList.add('dark');
                 localStorage.setItem('tema_apariencia', 'dark');
             }
-            inicializarEcosistema();
+            sincronizarEcosistema();
         }
 
-        function corregirBotonClaro() {
-            setTimeout(() => {
-                const btn = document.getElementById('btn-apariencia');
-                if (btn && !document.documentElement.classList.contains('dark')) {
-                    btn.innerText = "Modo Oscuro 🌙";
-                }
-            }, 80);
+        // 6. MOTOR DE INYECCIÓN MODULAR CENTRALIZADO
+        async function sincronizarEcosistema() {
+            await inicializarMenuGlobal('link-catalogo');
+            actualizarBadgeHeader();
+            
+            // Renderizamos pie de página de forma nativa
+            const respFooter = await fetch('components/footer.html');
+            document.getElementById('footer-contenedor').innerHTML = await respFooter.text();
         }
 
-        // 6. INICIALIZADOR DE MÓDULOS DE INTERFAZ
-        async function inicializarEcosistema() {
-            try {
-                // Levantar menú
-                const respHeader = await fetch('components/header.html');
-                document.getElementById('header-contenedor').innerHTML = await respHeader.text();
-                corregirBotonClaro();
-
-                // Destacar de manera dinámica la pestaña CATÁLOGO
-                const linkCatalogo = document.getElementById('link-catalogo');
-                if (linkCatalogo) {
-                    linkCatalogo.className = "text-black dark:text-white border-b-2 border-black dark:border-white pb-1";
-                }
-
-                // Ajustar visualmente el badge del carrito si venía con datos
-                actualizarBadgeHeader();
-
-                // Levantar pie de página
-                const respFooter = await fetch('components/footer.html');
-                document.getElementById('footer-contenedor').innerHTML = await respFooter.text();
-
-                // Consultar base de datos por autenticación activa
-                const supabaseClient = supabase.createClient(CONFIG.SUPABASE_URL, CONFIG.SUPABASE_ANON_KEY);
-                const { data: { session } } = await supabaseClient.auth.getSession();
-                
-                if (session) {
-                    const saludoNav = document.getElementById('saludo-nav');
-                    const nombreUsuario = session.user.email.split('@')[0];
-
-                    saludoNav.innerText = `Bienvenido, ${nombreUsuario}`;
-                    saludoNav.classList.remove('opacity-0');
-                    saludoNav.classList.add('opacity-100');
-                }
-            } catch (error) {
-                console.error("Error sincronizando los módulos del catálogo:", error);
-            }
-        }
-
-        // Arranque secuencial controlado
-        inicializarEcosistema();
+        // Ejecución única de arranque limpio
+        sincronizarEcosistema();
         cargarCatalogo();
     </script>
 

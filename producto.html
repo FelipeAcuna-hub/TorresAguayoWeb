@@ -19,7 +19,7 @@
     <div id="header-contenedor" class="sticky top-0 z-50"></div>
 
     <main class="flex-grow max-w-6xl w-full mx-auto px-6 pt-12 pb-24">
-        
+
         <div id="detalle-producto" class="grid grid-cols-1 md:grid-cols-2 gap-12 items-start mt-8">
             </div>
 
@@ -31,6 +31,7 @@
 
     <script>
         const contenedor = document.getElementById('detalle-producto');
+        const supabaseClient = supabase.createClient(CONFIG.SUPABASE_URL, CONFIG.SUPABASE_ANON_KEY);
 
         // 1. PERSISTENCIA DE LA CONFIGURACIÓN DE APARIENCIA
         const temaGuardado = localStorage.getItem('tema_apariencia');
@@ -38,10 +39,9 @@
             document.documentElement.classList.add('dark');
         } else {
             document.documentElement.classList.remove('dark');
-            corregirBotonClaro();
         }
 
-        window.conmutarApariencia = function() {
+        window.conmutarApariencia = function () {
             const html = document.documentElement;
             if (html.classList.contains('dark')) {
                 html.classList.remove('dark');
@@ -50,17 +50,7 @@
                 html.classList.add('dark');
                 localStorage.setItem('tema_apariencia', 'dark');
             }
-            // Re-renderizamos para que el Header y las tarjetas se adapten al tiro
-            inicializarEcosistema();
-        }
-
-        function corregirBotonClaro() {
-            setTimeout(() => {
-                const btn = document.getElementById('btn-apariencia');
-                if (btn && !document.documentElement.classList.contains('dark')) {
-                    btn.innerText = "Modo Oscuro 🌙";
-                }
-            }, 80);
+            inicializarMenuGlobal(null);
         }
 
         // 2. DETALLE DINÁMICO: Capturamos el parámetro ID de la URL (?id=...)
@@ -69,21 +59,26 @@
 
         async function cargarDetalle() {
             try {
-                const respuesta = await fetch('productos.json');
-                const productos = await respuesta.json();
+                // CONSULTA A: Traer el producto maestro de Supabase
+                const { data: prod, error: prodError } = await supabaseClient
+                    .from('productos')
+                    .select('*')
+                    .eq('id', productoId)
+                    .single();
 
-                // Buscamos el repuesto específico
-                const prod = productos.find(p => p.id === productoId);
-
-                if (!prod) {
-                    contenedor.innerHTML = `<p class="text-gray-500 font-mono text-xs uppercase col-span-2 text-center py-12">Componente técnico no registrado en el catálogo.</p>`;
+                if (prodError || !prod) {
+                    contenedor.innerHTML = `<p class="text-gray-500 font-mono text-xs uppercase col-span-2 text-center py-12">Componente técnico no registrado.</p>`;
                     return;
                 }
 
-                // Seteamos el título de la pestaña con el nombre del equipo
+                // CONSULTA B: ¡ESTA ES LA CLAVE! Trae las 4 fotos de la galería relacional
+                const { data: galeria, error: galeriaError } = await supabaseClient
+                    .from('imagenes_galeria')
+                    .select('url')
+                    .eq('producto_id', productoId);
+
                 document.title = `${prod.nombre} — Torres Aguayo`;
 
-                // Renderizado condicional de la Ficha en PDF
                 let enlacePdf = '';
                 if (prod.pdf && prod.pdf !== "") {
                     enlacePdf = `
@@ -93,11 +88,39 @@
                     `;
                 }
 
-                // Inyectamos la estructura adaptada a ambos modos lumínicos
+                // ARQUITECTURA DE LA GALERÍA MULTIFOTO (COLUMNA IZQUIERDA)
+                let bloqueVisorImagenes = '';
+                
+                // Si la consulta B encontró las fotos en 'imagenes_galeria', dibuja el carrusel
+                if (galeria && galeria.length > 0) {
+                    let htmlMiniaturas = galeria.map((img) => `
+                        <button onclick="cambiarFotoVisor('${img.url}')" class="w-20 h-20 border border-gray-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 p-1 rounded hover:border-red-500 focus:outline-none focus:border-red-500 overflow-hidden transition-all duration-200">
+                            <img src="${img.url}" class="w-full h-full object-contain">
+                        </button>
+                    `).join('');
+
+                    bloqueVisorImagenes = `
+                        <div class="space-y-4">
+                            <div class="border border-gray-200 bg-gray-50/50 dark:border-gray-900 dark:bg-gray-950/30 rounded-lg p-6 flex items-center justify-center overflow-hidden h-[380px] md:h-[450px] transition-colors">
+                                <img id="foto-principal-visor" src="${prod.imagen}" alt="${prod.nombre}" class="w-full h-full object-contain rounded-md transition-all duration-300">
+                            </div>
+                            <div class="flex flex-wrap gap-2.5 justify-start">
+                                ${htmlMiniaturas}
+                            </div>
+                        </div>
+                    `;
+                } else {
+                    // Fallback de respaldo por si el ítem no tiene carrete
+                    bloqueVisorImagenes = `
+                        <div class="border border-gray-200 bg-gray-50/50 dark:border-gray-900 dark:bg-gray-950/30 rounded-lg p-6 flex items-center justify-center overflow-hidden h-[380px] md:h-[450px] transition-colors">
+                            <img src="${prod.imagen}" alt="${prod.nombre}" class="w-full h-full object-contain rounded-md">
+                        </div>
+                    `;
+                }
+
+                // Inyectamos la estructura completa unificada en la grilla maestra
                 contenedor.innerHTML = `
-                    <div class="border border-gray-200 bg-gray-50/50 dark:border-gray-900 dark:bg-gray-950/30 rounded-lg p-6 flex items-center justify-center overflow-hidden h-[400px] md:h-[500px] transition-colors">
-                        <img src="${prod.imagen}" alt="${prod.nombre}" class="w-full h-full object-contain rounded-md group-hover:scale-105 transition-transform duration-300">
-                    </div>
+                    ${bloqueVisorImagenes}
 
                     <div class="space-y-6">
                         <div class="border-b border-gray-200 dark:border-gray-900 pb-4 transition-colors">
@@ -132,54 +155,44 @@
 
             } catch (error) {
                 console.error("Error cargando el detalle:", error);
-                contenedor.innerHTML = `<p class="text-gray-500 font-mono text-xs uppercase col-span-2 text-center py-12">Error técnico al sincronizar la ficha del producto.</p>`;
             }
         }
 
-        // Lógica del botón Comprar Ahora: Añade a la selección y manda al Checkout
-        window.redirigirAlPago = function() {
-            let actuales = JSON.parse(localStorage.getItem('carrito_seleccion')) || [];
-            if (!actuales.includes(productoId)) {
-                actuales.push(productoId);
-                localStorage.setItem('carrito_seleccion', JSON.stringify(actuales));
+        // LÓGICA DE INTERACCIÓN DE MINIATURAS
+        window.cambiarFotoVisor = function(urlNueva) {
+            const visorPrincipal = document.getElementById('foto-principal-visor');
+            if (visorPrincipal) {
+                visorPrincipal.style.opacity = '0'; // Efecto atenuado rápido
+                setTimeout(() => {
+                    visorPrincipal.src = urlNueva;
+                    visorPrincipal.style.opacity = '1';
+                }, 150);
             }
+        }
+
+        // Lógica de compra: añade un ítem o incrementa unidades al checkout estructurado
+        window.redirigirAlPago = function () {
+            let actuales = JSON.parse(localStorage.getItem('carrito_seleccion')) || [];
+            
+            // Si el carro viene en formato de objetos de cantidad debido a la actualización
+            if (actuales.length > 0 && typeof actuales[0] === 'object') {
+                const existe = actuales.find(item => item.id === productoId);
+                if (!existe) {
+                    actuales.push({ id: productoId, cantidad: 1 });
+                } else {
+                    existe.cantidad += 1; // Si ya estaba, sumamos una unidad
+                }
+            } else {
+                // Fallback por si acaso
+                if (!actuales.includes(productoId)) actuales.push(productoId);
+            }
+            
+            localStorage.setItem('carrito_seleccion', JSON.stringify(actuales));
             window.location.href = "carrito.html";
         }
 
-        // 3. INICIALIZADOR DE INTERFAZ MODULAR COMPLETA
-        async function inicializarEcosistema() {
-            try {
-                // Inyectar Barra superior
-                const respHeader = await fetch('components/header.html');
-                document.getElementById('header-contenedor').innerHTML = await respHeader.text();
-                corregirBotonClaro();
-
-                // Nota de Arquitectura: En la página de producto detallado no se subraya ninguna
-                // pestaña porque el usuario está dentro de una ficha técnica específica.
-
-                // Inyectar Pie de página
-                const respFooter = await fetch('components/footer.html');
-                document.getElementById('footer-contenedor').innerHTML = await respFooter.text();
-
-                // Consultar Auth en Supabase para el Saludo dinámico
-                const supabaseClient = supabase.createClient(CONFIG.SUPABASE_URL, CONFIG.SUPABASE_ANON_KEY);
-                const { data: { session } } = await supabaseClient.auth.getSession();
-                
-                if (session) {
-                    const saludoNav = document.getElementById('saludo-nav');
-                    const nombreUsuario = session.user.email.split('@')[0];
-
-                    saludoNav.innerText = `Bienvenido, ${nombreUsuario}`;
-                    saludoNav.classList.remove('opacity-0');
-                    saludoNav.classList.add('opacity-100');
-                }
-            } catch (error) {
-                console.error("Error en sincronización modular de la ficha:", error);
-            }
-        }
-
-        // Ejecuciones iniciales controladas
-        inicializarEcosistema();
+        // Arranque secuencial controlado por el motor maestro global
+        inicializarMenuGlobal(null);
         cargarDetalle();
     </script>
 </body>

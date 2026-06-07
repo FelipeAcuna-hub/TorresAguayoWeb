@@ -1,188 +1,539 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Torres Aguayo — Panel Admin</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <title>Torres Aguayo — Consola Central</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = { darkMode: 'class' }
+    </script>
 </head>
-<body class="bg-black text-white antialiased font-sans">
 
-    <nav class="border-b border-gray-800 p-5 flex justify-between items-center bg-black/80">
-        <div class="flex items-center space-x-4">
-            <div class="font-black tracking-tighter text-2xl uppercase text-red-500">Panel de Control</div>
-            <span id="user-badge" class="text-[10px] bg-gray-900 border border-gray-800 text-gray-400 font-mono px-2 py-0.5 rounded uppercase hidden">Admin</span>
-        </div>
-        <div class="space-x-6 text-xs font-bold tracking-widest text-gray-400">
-            <a href="index.html" class="hover:text-red-500 transition">VER SITIO</a>
-            <button id="btn-logout" class="text-red-500 hover:text-red-400 transition uppercase">CERRAR SESIÓN</button>
-        </div>
-    </nav>
+<body
+    class="bg-white text-black dark:bg-black dark:text-white antialiased font-sans flex flex-col min-h-screen transition-colors duration-300">
 
-    <main class="max-w-6xl mx-auto px-6 pt-12 pb-32">
-        
-        <section class="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-12">
-            <div class="border border-gray-900 bg-gray-950/40 p-6 rounded-lg">
-                <div class="text-gray-500 font-mono text-xs uppercase">Items Registrados</div>
-                <div id="metric-total-items" class="text-4xl font-black mt-2 text-white font-mono">0</div>
+    <div id="header-contenedor" class="sticky top-0 z-50"></div>
+
+    <main class="flex-grow max-w-6xl w-full mx-auto px-6 pt-12 pb-24 space-y-10">
+
+        <div
+            class="flex flex-col sm:flex-row sm:justify-between sm:items-end border-b border-gray-200 dark:border-gray-900 pb-4 gap-4 transition-colors">
+            <div>
+                <span
+                    class="text-red-500 font-mono text-xs font-bold tracking-widest uppercase bg-red-500/10 px-3 py-1 rounded border border-red-500/20">
+                    Sistemas Cloud
+                </span>
+                <h1 class="text-4xl font-black tracking-tighter mt-4 uppercase italic">
+                    Consola <span class="text-red-500 not-italic font-light">Central</span>
+                </h1>
             </div>
-            <div class="border border-gray-900 bg-gray-950/40 p-6 rounded-lg">
-                <div class="text-gray-500 font-mono text-xs uppercase">Valor Total del Stock</div>
-                <div id="metric-total-value" class="text-4xl font-black mt-2 text-red-500 font-mono">$0</div>
+            <p id="saludo-admin" class="text-gray-400 font-mono text-xs uppercase tracking-wider">Cargando
+                privilegios...</p>
+        </div>
+
+        <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 font-mono text-xs">
+            <div
+                class="border border-gray-200 bg-gray-50/50 dark:border-gray-900 dark:bg-gray-950/40 p-4 rounded-lg flex flex-col justify-between h-24 transition-all">
+                <span class="text-gray-400 uppercase tracking-wider text-[10px]">Facturación Total (Neto)</span>
+                <div id="kpi-facturacion" class="text-2xl font-sans font-black text-black dark:text-white mt-1">$0</div>
+                <span class="text-[9px] text-zinc-500">Suma total tabla ventas</span>
             </div>
-            <div class="border border-gray-900 bg-gray-950/40 p-6 rounded-lg">
-                <div class="text-gray-500 font-mono text-xs uppercase">Última Actualización</div>
-                <div id="metric-last-update" class="text-sm font-mono mt-4 text-gray-400 uppercase">Sincronizando...</div>
+            <div
+                class="border border-gray-200 bg-gray-50/50 dark:border-gray-900 dark:bg-gray-950/40 p-4 rounded-lg flex flex-col justify-between h-24 transition-all">
+                <span class="text-gray-400 uppercase tracking-wider text-[10px]">Órdenes Procesadas</span>
+                <div id="kpi-ordenes" class="text-2xl font-sans font-black text-red-500 dark:text-red-400 mt-1">0 u.
+                </div>
+                <span class="text-[9px] text-zinc-500">Transacciones exitosas</span>
+            </div>
+            <div
+                class="border border-gray-200 bg-gray-50/50 dark:border-gray-900 dark:bg-gray-950/40 p-4 rounded-lg flex flex-col justify-between h-24 transition-all">
+                <span class="text-gray-400 uppercase tracking-wider text-[10px]">Ticket Promedio</span>
+                <div id="kpi-ticket" class="text-2xl font-sans font-black text-black dark:text-white mt-1">$0</div>
+                <span class="text-[9px] text-zinc-500">Promedio por cliente</span>
+            </div>
+            <div
+                class="border border-gray-200 bg-gray-50/50 dark:border-gray-900 dark:bg-gray-950/40 p-4 rounded-lg flex flex-col justify-between h-24 transition-all">
+                <span class="text-gray-400 uppercase tracking-wider text-[10px]">Stock Crítico (Falta)</span>
+                <div id="kpi-critico" class="text-2xl font-sans font-black text-amber-500 mt-1">0 ítems</div>
+                <span class="text-[9px] text-zinc-500">Componentes con stock &lt; 2</span>
             </div>
         </section>
 
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-12">
-            <section class="border border-gray-900 bg-gray-950/50 p-6 rounded-lg h-fit md:col-span-1">
-                <h2 class="text-xl font-bold uppercase tracking-tight mb-6 text-red-500 italic">Agregar al Catálogo</h2>
-                <form id="form-producto" class="space-y-4">
+        <section class="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
+
+            <div
+                class="lg:col-span-1 border border-gray-200 bg-gray-50 dark:border-gray-900 dark:bg-gray-950/40 p-6 rounded-lg transition-colors">
+                <div class="flex justify-between items-center mb-4">
+                    <h2 id="form-titulo" class="text-lg font-black tracking-tight uppercase italic text-red-500">
+                        Inyectar Componente [+]</h2>
+                    <button id="btn-cancelar" onclick="salirModoEdicion()"
+                        class="hidden text-[10px] font-mono uppercase bg-zinc-200 dark:bg-zinc-800 px-2 py-1 rounded text-gray-500 hover:text-red-500 transition-all font-bold">Cancelar
+                        [X]</button>
+                </div>
+
+                <form id="form-producto" onsubmit="inyectarProductoCloud(event)" class="space-y-4 font-mono text-xs">
+                    <input type="hidden" id="p-id-oculto" value="">
+
                     <div>
-                        <label class="block text-xs font-mono text-gray-500 uppercase mb-1">Nombre del Componente</label>
-                        <input type="text" id="nombre" required class="w-full bg-gray-900 border border-gray-800 rounded p-2 text-sm focus:outline-none focus:border-red-500 text-white">
+                        <label class="block text-gray-400 uppercase mb-1">Nombre del Equipo / Repuesto</label>
+                        <input type="text" id="p-nombre" required
+                            class="w-full bg-white dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-800 rounded p-2.5 text-black dark:text-white focus:outline-none focus:border-red-500 transition-colors uppercase">
                     </div>
+
                     <div>
-                        <label class="block text-xs font-mono text-gray-500 uppercase mb-1">Precio Neto ($)</label>
-                        <input type="number" id="precio" required class="w-full bg-gray-900 border border-gray-800 rounded p-2 text-sm focus:outline-none focus:border-red-500 text-white">
+                        <label class="block text-gray-400 uppercase mb-1">Descripción Técnica</label>
+                        <textarea id="p-descripcion" rows="3" required
+                            class="w-full bg-white dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-800 rounded p-2.5 text-black dark:text-white focus:outline-none focus:border-red-500 transition-colors"></textarea>
                     </div>
+
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <label class="block text-gray-400 uppercase mb-1">Precio ($)</label>
+                            <input type="number" id="p-precio" required
+                                class="w-full bg-white dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-800 rounded p-2.5 text-black dark:text-white focus:outline-none focus:border-red-500 transition-colors">
+                        </div>
+                        <div>
+                            <label class="block text-gray-400 uppercase mb-1">Stock (Unidades)</label>
+                            <input type="number" id="p-stock" required
+                                class="w-full bg-white dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-800 rounded p-2.5 text-black dark:text-white focus:outline-none focus:border-red-500 transition-colors">
+                        </div>
+                    </div>
+
                     <div>
-                        <label class="block text-xs font-mono text-gray-500 uppercase mb-1">Especificaciones Técnicas</label>
-                        <textarea id="descripcion" required class="w-full bg-gray-900 border border-gray-800 rounded p-2 text-sm h-24 focus:outline-none focus:border-red-500 text-white"></textarea>
+                        <label class="block text-gray-400 uppercase mb-1">Categoría Logística</label>
+                        <select id="p-categoria"
+                            class="w-full bg-white dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-800 rounded p-2.5 text-black dark:text-white focus:outline-none focus:border-red-500 transition-colors uppercase">
+                            <option value="iluminacion">Iluminación</option>
+                            <option value="electronica">Electrónica</option>
+                            <option value="accesorios">Accesorios</option>
+                            <option value="mecanica">Mecánica</option> //recordar agregar la nueva categoria en el filtro del catalogo.html
+                            <option value="Scanners">Scanners y Diagnóstico</option>
+                        </select>
                     </div>
-                    <button type="submit" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold text-xs tracking-wider py-3 rounded transition-all uppercase">
-                        Inyectar a Base de Datos
+
+                    <div class="space-y-3 pt-2">
+                        <div>
+                            <label class="block text-gray-400 uppercase mb-1">Galería de Imágenes <span id="label-img-req" class="text-zinc-500">(Requerida)</span></label>
+                            <input type="file" id="p-archivo-imagen" accept="image/*" multiple class="w-full text-zinc-500 dark:text-zinc-400 file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:text-xs file:font-mono file:bg-red-500/10 file:text-red-500 hover:file:bg-red-500/20 file:cursor-pointer transition-all">
+                        </div>
+                        <div>
+                            <label class="block text-gray-400 uppercase mb-1">Manual / Ficha Técnica (PDF
+                                Opcional)</label>
+                            <input type="file" id="p-archivo-pdf" accept=".pdf"
+                                class="w-full text-zinc-500 dark:text-zinc-400 file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:text-xs file:font-mono file:bg-zinc-200 dark:file:bg-zinc-800 file:text-gray-300 hover:file:bg-zinc-700 file:cursor-pointer transition-all">
+                        </div>
+                    </div>
+
+                    <button type="submit" id="btn-submit"
+                        class="w-full bg-red-600 hover:bg-red-700 text-white font-sans font-bold py-3 px-4 rounded transition-all uppercase tracking-wider text-xs pt-4">
+                        Inyectar al Catálogo [+]
                     </button>
                 </form>
-            </section>
+            </div>
 
-            <section class="md:col-span-2">
-                <h2 class="text-xl font-bold uppercase tracking-tight mb-6 italic">Inventario en la Nube</h2>
-                <div id="lista-admin" class="space-y-3">
-                    </div>
-            </section>
-        </div>
+            <div
+                class="lg:col-span-2 border border-gray-200 bg-gray-50 dark:border-gray-900 dark:bg-gray-950/40 p-6 rounded-lg transition-colors overflow-x-auto">
+                <h2 class="text-lg font-black tracking-tight uppercase italic text-black dark:text-white mb-4">
+                    Inventario Activo Cloud</h2>
+
+                <table class="w-full text-left font-mono text-xs border-collapse">
+                    <thead>
+                        <tr
+                            class="border-b border-gray-200 dark:border-gray-900 text-gray-400 text-[10px] uppercase tracking-wider">
+                            <th class="pb-3 font-normal">Ítem</th>
+                            <th class="pb-3 font-normal">Categoría</th>
+                            <th class="pb-3 font-normal text-right">Precio</th>
+                            <th class="pb-3 font-normal text-center">Stock</th>
+                            <th class="pb-3 font-normal text-center">Acción</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tabla-inventario" class="divide-y divide-gray-100 dark:divide-gray-900"></tbody>
+                </table>
+            </div>
+
+        </section>
     </main>
 
+    <section
+        class="border border-gray-200 bg-gray-50 dark:border-gray-900 dark:bg-gray-950/40 p-6 rounded-lg transition-colors overflow-x-auto">
+        <h2 class="text-lg font-black tracking-tight uppercase italic text-red-500 mb-4">Registro Global de Ventas y
+            Pedidos</h2>
+
+        <table class="w-full text-left font-mono text-xs border-collapse">
+            <thead>
+                <tr
+                    class="border-b border-gray-200 dark:border-gray-900 text-gray-400 text-[10px] uppercase tracking-wider">
+                    <th class="pb-3 font-normal">ID VENTA</th>
+                    <th class="pb-3 font-normal">FECHA Y HORA</th>
+                    <th class="pb-3 font-normal">COMPRADOR (EMAIL)</th>
+                    <th class="pb-3 font-normal">DESTINO LOGÍSTICO</th>
+                    <th class="pb-3 font-normal">ESTADO DOCUMENTO</th>
+                    <th class="pb-3 font-normal text-right">MONTO NETO</th>
+                </tr>
+            </thead>
+            <tbody id="tabla-pedidos-admin"
+                class="divide-y divide-gray-100 dark:divide-gray-900 text-black dark:text-white">
+                <tr>
+                    <td colspan="6" class="py-4 text-gray-400 uppercase tracking-wide text-center">Sincronizando flujo
+                        de caja con Supabase...</td>
+                </tr>
+            </tbody>
+        </table>
+    </section>
+
+    <div id="footer-contenedor"></div>
+
+    <script src="config.js"></script>
+
     <script>
-        // REEMPLAZA ESTOS DATOS CON LOS DE TU PANEL DE SUPABASE
-        const SUPABASE_URL = "TU_SUPABASE_URL_AQUÍ";
-        const SUPABASE_ANON_KEY = "TU_SUPABASE_ANON_KEY_AQUÍ";
-        
-        const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        const supabaseClient = supabase.createClient(CONFIG.SUPABASE_URL, CONFIG.SUPABASE_ANON_KEY);
 
-        const form = document.getElementById('form-producto');
-        const listaAdmin = document.getElementById('lista-admin');
+        const kpiFacturacion = document.getElementById('kpi-facturacion');
+        const kpiOrdenes = document.getElementById('kpi-ordenes');
+        const kpiTicket = document.getElementById('kpi-ticket');
+        const kpiCritico = document.getElementById('kpi-critico');
+        const tablaBody = document.getElementById('tabla-inventario');
 
-        // ELEMENTOS DE MÉTRICAS
-        const mTotalItems = document.getElementById('metric-total-items');
-        const mTotalValue = document.getElementById('metric-total-value');
-        const mLastUpdate = document.getElementById('metric-last-update');
+        // Referencias para Edición Híbrida
+        let listaProductosLocal = [];
+        const formTitulo = document.getElementById('form-titulo');
+        const btnSubmit = document.getElementById('btn-submit');
+        const btnCancelar = document.getElementById('btn-cancelar');
+        const labelImgReq = document.getElementById('label-img-req');
+        const inputIdOculto = document.getElementById('p-id-oculto');
 
-        // GUARDIÁN DE RUTA: Validar sesión activa del Administrador al cargar la página
-        async function checkUser() {
-            const { data: { session } } = await supabase.auth.getSession();
-            if (!session) {
-                // Sin sesión, devuelta al login
-                window.location.href = "login.html";
-            } else {
-                // Mostrar el correo del administrador conectado
-                const badge = document.getElementById('user-badge');
-                badge.innerText = session.user.email;
-                badge.classList.remove('hidden');
-                cargarInventarioReal();
-            }
-        }
-
-        // Cargar datos y calcular métricas en tiempo real
-        async function cargarInventarioReal() {
-            // Hacemos un SELECT a la tabla "productos" de Supabase
-            const { data: productos, error } = await supabase
-                .from('productos')
-                .select('*')
-                .order('id', { ascending: false });
-
-            if (error) {
-                console.error("Error cargando inventario:", error);
-                return;
-            }
-
-            // 1. Calcular Métricas
-            const totalItems = productos.length;
-            const totalValue = productos.reduce((sum, p) => sum + (p.precio || 0), 0);
-            
-            mTotalItems.innerText = totalItems;
-            mTotalValue.innerText = `$${totalValue.toLocaleString('es-CL')}`;
-            mLastUpdate.innerText = new Date().toLocaleTimeString('es-CL', { hour: '2-digit', minute: '2-digit' }) + " HRS";
-
-            // 2. Renderizar lista para quitar
-            listaAdmin.innerHTML = '';
-            if (productos.length === 0) {
-                listaAdmin.innerHTML = '<p class="text-gray-600 font-mono text-xs uppercase">Base de datos vacía.</p>';
-            }
-            
-            productos.forEach(prod => {
-                listaAdmin.innerHTML += `
-                    <div class="border border-gray-900 bg-gray-950 p-4 rounded flex justify-between items-center hover:border-gray-800 transition-all">
-                        <div>
-                            <h4 class="font-bold text-sm uppercase text-white">${prod.nombre}</h4>
-                            <p class="text-red-400 font-mono text-xs mt-0.5">$${prod.precio.toLocaleString('es-CL')}</p>
-                        </div>
-                        <button onclick="eliminarDelServidor(${prod.id})" class="text-xs font-bold text-gray-600 hover:text-red-500 transition uppercase tracking-wider">
-                            Eliminar
-                        </button>
-                    </div>
-                `;
-            });
-        }
-
-        // Crear/Insertar un nuevo producto en Supabase
-        form.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            
-            const nombre = document.getElementById('nombre').value;
-            const precio = parseInt(document.getElementById('precio').value);
-            const descripcion = document.getElementById('descripcion').value;
-
-            const { error } = await supabase
-                .from('productos')
-                .insert([{ nombre, precio, descripcion }]);
-
-            if (error) {
-                alert("Error al insertar componente: " + error.message);
-            } else {
-                form.reset();
-                cargarInventarioReal();
-            }
-        });
-
-        // Eliminar un producto por ID de Supabase
-        window.eliminarDelServidor = async function(id) {
-            if(confirm("¿Seguro que deseas dar de baja este componente técnico?")) {
-                const { error } = await supabase
+        // 1. CÁLCULO DE MÉTRICAS Y LISTAR TABLA
+        // 1. CÁLCULO DE MÉTRICAS + RENDERIZACIÓN DE LAS DOS TABLAS (INVENTARIO + PEDIDOS)
+        async function calcularMetricasYListar() {
+            try {
+                // A. Renderizar Inventario de Productos
+                const { data: productos, error: errProd } = await supabaseClient
                     .from('productos')
-                    .delete()
-                    .eq('id', id);
+                    .select('*')
+                    .order('id', { ascending: true });
 
-                if (error) {
-                    alert("Error al eliminar: " + error.message);
+                if (errProd) throw errProd;
+                listaProductosLocal = productos;
+
+                const itemsCriticos = productos.filter(p => Number(p.stock) < 2).length;
+                kpiCritico.innerText = `${itemsCriticos} ítems`;
+
+                if (itemsCriticos > 0) {
+                    kpiCritico.className = "text-2xl font-sans font-black text-red-500 animate-pulse";
                 } else {
-                    cargarInventarioReal();
+                    kpiCritico.className = "text-2xl font-sans font-black text-emerald-500";
                 }
+
+                tablaBody.innerHTML = '';
+                if (productos.length === 0) {
+                    tablaBody.innerHTML = `<tr><td colspan="5" class="py-4 text-gray-500 uppercase">Sin componentes en la base de datos cloud.</td></tr>`;
+                } else {
+                    productos.forEach(p => {
+                        const esBajoStock = Number(p.stock) < 2;
+                        tablaBody.innerHTML += `
+                            <tr class="hover:bg-gray-50/50 dark:hover:bg-zinc-950/40 transition-colors">
+                                <td class="py-4 pr-3">
+                                    <div class="flex items-center space-x-3">
+                                        <img src="${p.imagen}" class="w-8 h-8 object-contain rounded bg-white border border-gray-200 dark:border-zinc-800">
+                                        <div>
+                                            <span class="font-bold uppercase text-black dark:text-white block max-w-[180px] truncate">${p.nombre}</span>
+                                            <span class="text-[9px] text-gray-400 block">SKU: #00${p.id}</span>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="py-4 text-gray-400 uppercase text-[10px]">${p.categoria}</td>
+                                <td class="py-4 text-right font-sans font-bold text-red-500 dark:text-red-400">$${p.precio.toLocaleString('es-CL')}</td>
+                                <td class="py-4 text-center font-bold ${esBajoStock ? 'text-red-500 font-black' : 'text-black dark:text-white'}">${p.stock}</td>
+                                <td class="py-4 text-center space-x-2">
+                                   <button onclick="activarModoEdicion(${p.id})" class="text-blue-500 hover:text-blue-600 font-bold uppercase text-[10px]">Editar</button>
+                                   <button onclick="eliminarProductoCloud(${p.id})" class="text-gray-400 hover:text-red-500 underline transition uppercase text-[10px]">Eliminar</button>
+                                </td>
+                            </tr>
+                        `;
+                    });
+                }
+
+                // B. PARCHE NUEVO: Renderizar Historial de Ventas / Pedidos Globales
+                const tablaPedidosBody = document.getElementById('tabla-pedidos-admin');
+                const { data: ventas, error: errVentas } = await supabaseClient
+                    .from('ventas')
+                    .select('*')
+                    .order('id', { ascending: false }); // Las transacciones más frescas arriba
+
+                if (!errVentas && ventas && ventas.length > 0) {
+                    const totalFacturado = ventas.reduce((acc, v) => acc + v.total_neto, 0);
+                    const cantidadOrdenes = ventas.length;
+                    const ticketPromedio = Math.round(totalFacturado / cantidadOrdenes);
+
+                    kpiFacturacion.innerText = `$${totalFacturado.toLocaleString('es-CL')}`;
+                    kpiOrdenes.innerText = `${cantidadOrdenes} u.`;
+                    kpiTicket.innerText = `$${ticketPromedio.toLocaleString('es-CL')}`;
+
+                    // Rellenamos la nueva tabla de pedidos
+                    tablaPedidosBody.innerHTML = '';
+                    ventas.forEach(v => {
+                        const timestamp = new Date(v.created_at).toLocaleString('es-CL', {
+                            day: '2-digit',
+                            month: '2-digit',
+                            year: 'numeric',
+                            hour: '2-digit',
+                            minute: '2-digit'
+                        });
+
+                        tablaPedidosBody.innerHTML += `
+                            <tr class="hover:bg-gray-50/50 dark:hover:bg-zinc-950/40 transition-colors">
+                                <td class="py-4 font-bold text-red-500 dark:text-red-400">#00${v.id}</td>
+                                <td class="py-4 text-zinc-500 dark:text-zinc-400 text-[11px]">${timestamp}</td>
+                                <td class="py-4 lowercase text-zinc-600 dark:text-zinc-300 font-sans font-medium">${v.cliente_email}</td>
+                                <td class="py-4 uppercase text-gray-500 font-semibold">${v.comuna_despacho}</td>
+                                <td class="py-4">
+                                    <span class="px-2 py-0.5 rounded font-mono text-[10px] uppercase font-bold tracking-wider bg-emerald-500/10 text-emerald-500 border border-emerald-500/20">
+                                        ${v.estado}
+                                    </span>
+                                </td>
+                                <td class="py-4 text-right font-sans font-bold text-black dark:text-white">$${v.total_neto.toLocaleString('es-CL')}</td>
+                            </tr>
+                        `;
+                    });
+
+                } else {
+                    kpiFacturacion.innerText = "$0";
+                    kpiOrdenes.innerText = "0 u.";
+                    kpiTicket.innerText = "$0";
+                    tablaPedidosBody.innerHTML = `<tr><td colspan="6" class="py-6 text-gray-400 text-center uppercase tracking-wider text-[10px]">No se registran transacciones confirmadas en el sistema.</td></tr>`;
+                }
+
+            } catch (err) {
+                console.error("Falla de sincronización en panel de control:", err);
             }
         }
 
-        // Manejo del Logout
-        document.getElementById('btn-logout').addEventListener('click', async () => {
-            await supabase.auth.signOut();
-            window.location.href = "login.html";
-        });
+        // MOTORES CONTROLADORES DE MODOS (EDICIÓN VISUAL)
+        window.activarModoEdicion = function (id) {
+            const prod = listaProductosLocal.find(p => Number(p.id) === Number(id));
+            if (!prod) return;
 
-        // Ejecutar verificación al arrancar
-        checkUser();
+            // Inyectar data cruda en campos
+            inputIdOculto.value = prod.id;
+            document.getElementById('p-nombre').value = prod.nombre;
+            document.getElementById('p-descripcion').value = prod.descripcion;
+            document.getElementById('p-precio').value = prod.precio;
+            document.getElementById('p-stock').value = prod.stock;
+            document.getElementById('p-categoria').value = prod.categoria;
+
+            // Cambios de comportamiento visual del Form
+            formTitulo.innerText = `Modificar Componente [ID: #00${prod.id}]`;
+            formTitulo.className = "text-lg font-black tracking-tight uppercase italic text-blue-500 dark:text-blue-400";
+
+            btnSubmit.innerText = "Sincronizar Cambios Cloud";
+            btnSubmit.className = "w-full bg-blue-600 hover:bg-blue-700 text-white font-sans font-bold py-3 px-4 rounded transition-all uppercase tracking-wider text-xs pt-4";
+
+            btnCancelar.classList.remove('hidden');
+            labelImgReq.innerText = "(Opcional)";
+            document.getElementById('p-archivo-imagen').required = false;
+
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        window.salirModoEdicion = function () {
+            document.getElementById('form-producto').reset();
+            inputIdOculto.value = "";
+
+            formTitulo.innerText = "Inyectar Componente [+]";
+            formTitulo.className = "text-lg font-black tracking-tight uppercase italic text-red-500";
+
+            btnSubmit.innerText = "Inyectar al Catálogo [+]";
+            btnSubmit.className = "w-full bg-red-600 hover:bg-red-700 text-white font-sans font-bold py-3 px-4 rounded transition-all uppercase tracking-wider text-xs pt-4";
+
+            btnCancelar.classList.add('hidden');
+            labelImgReq.innerText = "(Requerida)";
+            document.getElementById('p-archivo-imagen').required = true;
+        }
+
+        // 2. FUNCIÓN DE INYECCIÓN / EDICIÓN HÍBRIDA MUTABLE
+        // 2. FUNCIÓN DE INYECCIÓN / EDICIÓN HÍBRIDA MULTI-FOTO (CORREGIDA PARA UPDATE RELACIONAL)
+        window.inyectarProductoCloud = async function (event) {
+            event.preventDefault();
+
+            const idTarget = inputIdOculto.value;
+            const esEdicion = idTarget !== "";
+
+            btnSubmit.disabled = true;
+            btnSubmit.innerText = esEdicion ? "Actualizando Nube..." : "Subiendo ráfaga de fotos...";
+
+            const nombre = document.getElementById('p-nombre').value.trim();
+            const descripcion = document.getElementById('p-descripcion').value.trim();
+            const precio = parseInt(document.getElementById('p-precio').value);
+            const stock = parseInt(document.getElementById('p-stock').value);
+            const category = document.getElementById('p-categoria').value;
+
+            const inputImagenes = document.getElementById('p-archivo-imagen');
+            const archivoPdf = document.getElementById('p-archivo-pdf').files[0];
+
+            try {
+                let urlPortadaImg = "";
+                let urlFinalPdf = "";
+                let urlsDeGaleria = [];
+
+                if (esEdicion) {
+                    const original = listaProductosLocal.find(p => Number(p.id) === Number(idTarget));
+                    urlPortadaImg = original.imagen;
+                    urlFinalPdf = original.pdf;
+                }
+
+                // A. SUBIDA DE IMÁGENES AL STORAGE BUCKET
+                if (inputImagenes.files.length > 0) {
+                    for (let i = 0; i < inputImagenes.files.length; i++) {
+                        const foto = inputImagenes.files[i];
+                        const nombreLimpioImg = `${Date.now()}_${i}_${foto.name.replace(/\s+/g, '_')}`;
+                        
+                        btnSubmit.innerText = `Subiendo fotos (${i + 1}/${inputImagenes.files.length})...`;
+
+                        const { error: imgErr } = await supabaseClient.storage
+                            .from('imagenes-productos')
+                            .upload(nombreLimpioImg, foto);
+                        
+                        if (imgErr) throw imgErr;
+
+                        const { data } = supabaseClient.storage.from('imagenes-productos').getPublicUrl(nombreLimpioImg);
+                        urlsDeGaleria.push(data.publicUrl);
+                    }
+                    urlPortadaImg = urlsDeGaleria[0];
+                }
+
+                // B. SUBIDA DEL MANUAL PDF
+                if (archivoPdf) {
+                    const nombreLimpioPdf = `${Date.now()}_${archivoPdf.name.replace(/\s+/g, '_')}`;
+                    const { error: pdfErr } = await supabaseClient.storage.from('documentos-pdf').upload(nombreLimpioPdf, archivoPdf);
+                    if (pdfErr) throw pdfErr;
+
+                    const { data } = supabaseClient.storage.from('documentos-pdf').getPublicUrl(nombreLimpioPdf);
+                    urlFinalPdf = data.publicUrl;
+                }
+
+                // C. PERSISTENCIA LOGÍSTICA SQL
+                if (esEdicion) {
+                    // ACCIÓN UPDATE: Modificar datos técnicos (Agregamos .select() para asegurar consistencia relacional)
+                    const { data: productoActualizado, error: updateErr } = await supabaseClient
+                        .from('productos')
+                        .update({
+                            nombre: nombre,
+                            descripcion: descripcion,
+                            precio: precio,
+                            stock: stock,
+                            categoria: category,
+                            imagen: urlPortadaImg,
+                            pdf: urlFinalPdf
+                        })
+                        .eq('id', idTarget)
+                        .select(); // <--- CLAVE: Esto previene la violación de llave foránea al retornar el registro activo
+
+                    if (updateErr) throw updateErr;
+
+                    // Si subió fotos nuevas durante la edición, actualizamos la galería relacional
+                    if (urlsDeGaleria.length > 0 && productoActualizado) {
+                        await supabaseClient.from('imagenes_galeria').delete().eq('producto_id', idTarget);
+                        
+                        const nuevasFilasGaleria = urlsDeGaleria.map(url => ({ 
+                            producto_id: idTarget, 
+                            url: url 
+                        }));
+                        
+                        const { error: galErr } = await supabaseClient.from('imagenes_galeria').insert(nuevasFilasGaleria);
+                        if (galErr) throw galErr;
+                    }
+
+                    alert("¡Ficha técnica, PDF y galería modificados con éxito!");
+                    salirModoEdicion();
+                } else {
+                    // ACCIÓN INSERT: Crear un componente maestro nuevo desde cero
+                    const { data: productoInsertado, error: insErr } = await supabaseClient
+                        .from('productos')
+                        .insert([{
+                            nombre: nombre,
+                            descripcion: descripcion,
+                            precio: precio,
+                            stock: stock,
+                            categoria: category,
+                            imagen: urlPortadaImg,
+                            pdf: urlFinalPdf
+                        }])
+                        .select();
+
+                    if (insErr) throw insErr;
+
+                    if (urlsDeGaleria.length > 0 && productoInsertado) {
+                        const nuevoProductoId = productoInsertado[0].id;
+                        const filasGaleria = urlsDeGaleria.map(url => ({
+                            producto_id: nuevoProductoId,
+                            url: url
+                        }));
+
+                        const { error: galeriaError } = await supabaseClient
+                            .from('imagenes_galeria')
+                            .insert(filasFilas);
+
+                        if (galeriaError) throw galeriaError;
+                    }
+
+                    alert("¡Ficha técnica completa y galería multifoto indexadas en la nube!");
+                    document.getElementById('form-producto').reset();
+                }
+
+                calcularMetricasYListar();
+
+            } catch (err) {
+                console.error(err);
+                alert(`Error en procesamiento técnico: ${err.message || err}`);
+            } finally {
+                btnSubmit.disabled = false;
+                if (!inputIdOculto.value) salirModoEdicion();
+            }
+        }
+
+        // 3. ELIMINAR REGISTRO DE LA BASE DE DATOS
+        window.eliminarProductoCloud = async function (id) {
+            if (!confirm("¿Seguro que deseas remover este componente técnico del inventario cloud?")) return;
+            try {
+                const { error } = await supabaseClient.from('productos').delete().eq('id', id);
+                if (error) throw error;
+                if (inputIdOculto.value == id) salirModoEdicion();
+                calcularMetricasYListar();
+            } catch (err) {
+                console.error("Falla al remover ítem:", err);
+            }
+        }
+
+        // 4. CONTROL DE SESIÓN Y INTERFAZ
+        async function inicializarAdministracion() {
+            await inicializarMenuGlobal('link-admin');
+            const { data: { session } } = await supabaseClient.auth.getSession();
+            const txtSaludo = document.getElementById('saludo-admin');
+
+            if (session) {
+                const nombreAdmin = session.user.email.split('@')[0];
+                txtSaludo.innerText = `ADMIN: ${nombreAdmin.toUpperCase()} — ONLINE`;
+            } else {
+                txtSaludo.innerText = `ACCESO NO AUTENTICADO`;
+            }
+
+            const respFooter = await fetch('components/footer.html');
+            document.getElementById('footer-contenedor').innerHTML = await respFooter.text();
+            calcularMetricasYListar();
+        }
+
+        const temaGuardado = localStorage.getItem('tema_apariencia');
+        if (temaGuardado === 'dark' || (!temaGuardado && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.documentElement.classList.add('dark');
+        } else {
+            document.documentElement.classList.remove('dark');
+        }
+
+        inicializarAdministracion();
     </script>
 </body>
+
 </html>

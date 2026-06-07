@@ -18,25 +18,76 @@
 
     <div id="header-contenedor" class="sticky top-0 z-50"></div>
 
-    <main class="flex-grow max-w-6xl mx-auto px-6 pt-20 pb-32">
+    <main class="flex-grow max-w-6xl mx-auto px-6 pt-8 pb-32 space-y-16">
         
-        <section class="text-center max-w-3xl mx-auto mb-24">
-            <span class="text-red-500 font-mono text-xs font-bold tracking-widest uppercase bg-red-500/10 px-3 py-1 rounded border border-red-500/20">
-                Sistemas e Ingeniería
-            </span>
-            <h1 class="text-5xl md:text-7xl font-black tracking-tighter mt-6 mb-6 uppercase italic text-black dark:text-white">
-                Torres <span class="text-red-600 not-italic font-light">Aguayo</span>
-            </h1>
-            <p class="text-gray-600 dark:text-gray-400 text-lg md:text-xl font-light leading-relaxed mb-10">
-                Soluciones avanzadas en gestión de repuestos, automatización y componentes técnicos de alta precisión.
-            </p>
-            <div class="flex flex-col sm:flex-row justify-center gap-4">
-                <a href="catalogo.html" class="bg-red-600 hover:bg-red-700 text-white font-bold text-sm tracking-wider px-8 py-4 rounded transition-all uppercase text-center shadow-[0_4px_20px_rgba(220,38,38,0.15)]">
-                    Explorar Catálogo
-                </a>
+        <!-- SECCIÓN HERO: CARRUSEL INTERACTIVO ESTILO INGEZMAQ -->
+        <section class="relative w-full overflow-hidden">
+            <div class="relative h-[340px] sm:h-[440px] md:h-[540px] w-full rounded-2xl overflow-hidden bg-gray-100 dark:bg-zinc-950 border border-gray-200 dark:border-zinc-900 transition-colors duration-300">
+                
+                <!-- CONTENEDOR ANCHO DE SLIDES (Se desplaza horizontalmente) -->
+                <div id="carrusel-contenedor" class="relative w-full h-full flex transition-transform duration-700 ease-in-out">
+                    
+                    <!-- Slide 1: Escáneres y Diagnóstico -->
+                    <div class="w-full h-full flex-shrink-0 relative">
+                        <img src="img/bannerinicio1.png" class="w-full h-full object-cover brightness-[0.7] dark:brightness-[0.55]">
+                        <div class="absolute inset-0 flex flex-col justify-end p-8 md:p-16 bg-gradient-to-t from-black/90 via-black/30 to-transparent text-white">
+                            <span class="text-red-500 font-mono text-xs font-bold tracking-widest uppercase mb-2 bg-red-500/10 border border-red-500/20 px-2.5 py-1 rounded w-fit backdrop-blur-sm">
+                                Representantes Oficiales
+                            </span>
+                            <h2 class="text-3xl md:text-6xl font-black tracking-tighter uppercase italic max-w-3xl leading-none">
+                                Diagnóstico Automotriz <span class="text-red-500 not-italic font-light">Advanced</span>
+                            </h2>
+                            <p class="text-gray-300 font-sans text-xs md:text-sm mt-3 max-w-lg font-light leading-relaxed">
+                                Explora las mejores herramientas y escáneres profesionales del sector. Componentes validados bajo exigentes estándares de rendimiento automotriz.
+                            </p>
+                            <div class="mt-6">
+                                <a href="catalogo.html" class="inline-block bg-red-600 hover:bg-red-700 text-white font-bold text-xs tracking-wider px-6 py-3.5 rounded transition-all uppercase shadow-[0_4px_20px_rgba(220,38,38,0.2)]">
+                                    Explorar Catálogo
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Slide 2: Sistemas y Automatización -->
+                    <div class="w-full h-full flex-shrink-0 relative">
+                        <img src="https://images.unsplash.com/photo-1504384308090-c894fdcc538d?q=80&w=1600" class="w-full h-full object-cover brightness-[0.7] dark:brightness-[0.55]">
+                        <div class="absolute inset-0 flex flex-col justify-end p-8 md:p-16 bg-gradient-to-t from-black/90 via-black/30 to-transparent text-white">
+                            <span class="text-red-500 font-mono text-xs font-bold tracking-widest uppercase mb-2 bg-red-500/10 border border-red-500/20 px-2.5 py-1 rounded w-fit backdrop-blur-sm">
+                                Alta Ingeniería
+                            </span>
+                            <h2 class="text-3xl md:text-6xl font-black tracking-tighter uppercase italic max-w-3xl leading-none">
+                                Automatización e <span class="text-red-500 not-italic font-light">Integración</span>
+                            </h2>
+                            <p class="text-gray-300 font-sans text-xs md:text-sm mt-3 max-w-lg font-light leading-relaxed">
+                                Soluciones robustas en desarrollo técnico de hardware, sensores e interfaces de comunicación en tiempo real para entornos de alta exigencia.
+                            </p>
+                            <div class="mt-6">
+                                <a href="catalogo.html" class="inline-block bg-red-600 hover:bg-red-700 text-white font-bold text-xs tracking-wider px-6 py-3.5 rounded transition-all uppercase shadow-[0_4px_20px_rgba(220,38,38,0.2)]">
+                                    Ver Componentes
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- FLECHAS DE CONTROL DE TRANSICIÓN (Se ocultan en pantallas muy chicas para mejor visualización) -->
+                <button onclick="slideAnterior()" class="absolute left-4 top-1/2 -translate-y-1/2 z-30 bg-black/40 hover:bg-red-600 border border-white/10 hover:border-red-500 text-white p-3 rounded-full transition-all backdrop-blur-sm focus:outline-none hidden sm:block">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7"></path></svg>
+                </button>
+                <button onclick="slideSiguiente()" class="absolute right-4 top-1/2 -translate-y-1/2 z-30 bg-black/40 hover:bg-red-600 border border-white/10 hover:border-red-500 text-white p-3 rounded-full transition-all backdrop-blur-sm focus:outline-none hidden sm:block">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"></path></svg>
+                </button>
+
+                <!-- PUNTITOS DE INDICACIÓN INFERIOR (Estilo Cápsula Moderna) -->
+                <div id="carrusel-indicadores" class="absolute bottom-6 left-1/2 -translate-x-1/2 z-30 flex space-x-2.5">
+                    <button onclick="irASlide(0)" class="w-8 h-1 rounded-full bg-white transition-all duration-300" aria-label="Slide 1"></button>
+                    <button onclick="irASlide(1)" class="w-2.5 h-1 rounded-full bg-white/40 hover:bg-white/80 transition-all duration-300" aria-label="Slide 2"></button>
+                </div>
             </div>
         </section>
 
+        <!-- SECCIÓN DE CARACTERÍSTICAS / LOGÍSTICA -->
         <section class="grid grid-cols-1 md:grid-cols-3 gap-6">
             
             <div class="border border-gray-200 bg-gray-50 dark:border-gray-900 dark:bg-gray-950/50 p-8 rounded-lg hover:border-red-500/30 dark:hover:border-red-500/30 transition-all group duration-300">
@@ -71,7 +122,52 @@
     <script src="config.js"></script>
 
     <script>
-        // 1. PERSISTENCIA DE APARIENCIA: Cargar el tema guardado por el usuario
+        // --- MOTOR DEL CARRUSEL AUTOMÁTICO ---
+        let indexActual = 0;
+        const contenedorSlides = document.getElementById('carrusel-contenedor');
+        const botonesIndicadores = document.getElementById('carrusel-indicadores').children;
+        const totalSlides = 2; // Tenemos 2 slides activos configurados en el HTML
+        let intervaloAuto = setInterval(slideSiguiente, 6000); // Rotación cada 6 segundos
+
+        function actualizarCarrusel() {
+            contenedorSlides.style.transform = `translateX(-${indexActual * 100}%)`;
+            
+            for (let i = 0; i < botonesIndicadores.length; i++) {
+                if (i === indexActual) {
+                    botonesIndicadores[i].classList.remove('bg-white/40', 'w-2.5');
+                    botonesIndicadores[i].classList.add('bg-white', 'w-8');
+                } else {
+                    botonesIndicadores[i].classList.remove('bg-white', 'w-8');
+                    botonesIndicadores[i].classList.add('bg-white/40', 'w-2.5');
+                }
+            }
+        }
+
+        function slideSiguiente() {
+            indexActual = (indexActual + 1) % totalSlides;
+            actualizarCarrusel();
+            reiniciarTemporizador();
+        }
+
+        function slideAnterior() {
+            indexActual = (indexActual - 1 + totalSlides) % totalSlides;
+            actualizarCarrusel();
+            reiniciarTemporizador();
+        }
+
+        window.irASlide = function(index) {
+            indexActual = index;
+            actualizarCarrusel();
+            reiniciarTemporizador();
+        }
+
+        function reiniciarTemporizador() {
+            clearInterval(intervaloAuto);
+            intervaloAuto = setInterval(slideSiguiente, 6000);
+        }
+
+
+        // --- PERSISTENCIA DE APARIENCIA COHERENTE ---
         const temaGuardado = localStorage.getItem('tema_apariencia');
         if (temaGuardado === 'dark' || (!temaGuardado && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
             document.documentElement.classList.add('dark');
@@ -80,7 +176,6 @@
             corregirBotonClaro();
         }
 
-        // 2. CONMUTAR APARIENCIA: Modifica el estado de la clase raíz
         window.conmutarApariencia = function() {
             const html = document.documentElement;
             if (html.classList.contains('dark')) {
@@ -90,11 +185,9 @@
                 html.classList.add('dark');
                 localStorage.setItem('tema_apariencia', 'dark');
             }
-            // Re-inicializamos el menú para refrescar el estado del botón
             inicializarEcosistema();
         }
 
-        // Auxiliar para corregir el string de la interfaz en modo claro
         function corregirBotonClaro() {
             setTimeout(() => {
                 const btn = document.getElementById('btn-apariencia');
@@ -104,19 +197,16 @@
             }, 80);
         }
 
-        // 3. CARGA MAESTRA DE COMPONENTES (Header + Footer + Supabase Auth)
+        // --- CARGA MAESTRA DE COMPONENTES ---
         async function inicializarEcosistema() {
             try {
-                // Inyectar el menú unificado
                 const respHeader = await fetch('components/header.html');
                 document.getElementById('header-contenedor').innerHTML = await respHeader.text();
                 corregirBotonClaro();
 
-                // Inyectar el pie de página unificado
                 const respFooter = await fetch('components/footer.html');
                 document.getElementById('footer-contenedor').innerHTML = await respFooter.text();
 
-                // Consultar estado de sesión en la base de datos de Supabase
                 const supabaseClient = supabase.createClient(CONFIG.SUPABASE_URL, CONFIG.SUPABASE_ANON_KEY);
                 const { data: { session } } = await supabaseClient.auth.getSession();
                 
@@ -124,7 +214,6 @@
                     const saludoNav = document.getElementById('saludo-nav');
                     const nombreUsuario = session.user.email.split('@')[0];
 
-                    // Pintar el saludo dinámico debajo de Torres Aguayo
                     saludoNav.innerText = `Bienvenido, ${nombreUsuario}`;
                     saludoNav.classList.remove('opacity-0');
                     saludoNav.classList.add('opacity-100');
@@ -134,7 +223,7 @@
             }
         }
 
-        // Ejecutar al cargar la página
+        // Aseguramos que carguen tus scripts externos
         inicializarEcosistema();
     </script>
 

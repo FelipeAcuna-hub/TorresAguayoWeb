@@ -12,84 +12,146 @@
     </script>
 </head>
 
-<body class="bg-white text-black dark:bg-black dark:text-white antialiased font-sans flex flex-col min-h-screen transition-colors duration-300">
+<body
+    class="bg-white text-black dark:bg-black dark:text-white antialiased font-sans flex flex-col min-h-screen transition-colors duration-300">
 
     <div id="header-contenedor" class="sticky top-0 z-50"></div>
 
     <main class="flex-grow max-w-6xl w-full mx-auto px-6 pt-12 pb-24">
-        
-        <div id="seccion-auth" class="max-w-md mx-auto border border-gray-200 dark:border-gray-900 bg-gray-50 dark:bg-gray-950/40 p-8 rounded-lg mt-12 transition-colors space-y-6 hidden">
+
+        <div id="seccion-auth"
+            class="max-w-md mx-auto border border-gray-200 dark:border-gray-900 bg-gray-50 dark:bg-gray-950/40 p-8 rounded-lg mt-12 transition-colors space-y-6 hidden">
             <div class="border-b border-gray-200 dark:border-gray-900 pb-3 flex justify-between">
-                <button onclick="cambiarModoAuth('login')" id="tab-login" class="text-sm font-mono font-bold uppercase tracking-wider text-red-500 border-b-2 border-red-500 pb-1">Ingresar</button>
-                <button onclick="cambiarModoAuth('registro')" id="tab-registro" class="text-sm font-mono font-bold uppercase tracking-wider text-gray-400 pb-1">Registrarse</button>
+                <button onclick="cambiarModoAuth('login')" id="tab-login"
+                    class="text-sm font-mono font-bold uppercase tracking-wider text-red-500 border-b-2 border-red-500 pb-1">Ingresar</button>
+                <button onclick="cambiarModoAuth('registro')" id="tab-registro"
+                    class="text-sm font-mono font-bold uppercase tracking-wider text-gray-400 pb-1">Registrarse</button>
             </div>
 
             <form id="form-auth" onsubmit="procesarAuth(event)" class="space-y-4 font-mono text-xs">
                 <div>
                     <label class="block text-gray-500 uppercase mb-1">Correo Electrónico</label>
-                    <input type="email" id="auth-email" required class="w-full bg-white dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-800 rounded p-2.5 focus:outline-none focus:border-red-500 text-black dark:text-white transition-colors">
+                    <input type="email" id="auth-email" required
+                        class="w-full bg-white dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-800 rounded p-2.5 focus:outline-none focus:border-red-500 text-black dark:text-white transition-colors">
                 </div>
                 <div>
                     <label class="block text-gray-500 uppercase mb-1">Contraseña</label>
-                    <input type="password" id="auth-password" required class="w-full bg-white dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-800 rounded p-2.5 focus:outline-none focus:border-red-500 text-black dark:text-white transition-colors">
+                    <input type="password" id="auth-password" required
+                        class="w-full bg-white dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-800 rounded p-2.5 focus:outline-none focus:border-red-500 text-black dark:text-white transition-colors">
                 </div>
-                <button type="submit" id="btn-auth-submit" class="w-full bg-red-600 hover:bg-red-700 text-white font-sans font-bold text-xs tracking-widest py-3 rounded transition-all uppercase mt-2">
+                <button type="submit" id="btn-auth-submit"
+                    class="w-full bg-red-600 hover:bg-red-700 text-white font-sans font-bold text-xs tracking-widest py-3 rounded transition-all uppercase mt-2">
                     Iniciar Sesión
                 </button>
             </form>
         </div>
 
         <div id="seccion-dashboard" class="grid grid-cols-1 md:grid-cols-3 gap-8 items-start hidden">
-            <div class="border border-gray-200 bg-gray-50 dark:border-gray-900 dark:bg-gray-950/40 p-6 rounded-lg space-y-4 transition-colors">
-                <div class="w-16 h-16 bg-zinc-200 dark:bg-zinc-900 rounded-full border border-zinc-300 dark:border-zinc-800 flex items-center justify-center text-xl font-bold text-red-500 font-mono">U</div>
+
+            <div
+                class="border border-gray-200 bg-gray-50 dark:border-gray-900 dark:bg-gray-950/40 p-6 rounded-lg space-y-4 transition-colors">
+                <div
+                    class="w-16 h-16 bg-zinc-200 dark:bg-zinc-900 rounded-full border border-zinc-300 dark:border-zinc-800 flex items-center justify-center text-xl font-bold text-red-500 font-mono">
+                    U
+                </div>
                 <div>
                     <h2 class="text-lg font-black tracking-tight uppercase" id="perfil-email">...</h2>
-                    <p id="perfil-rol" class="text-gray-500 font-mono text-[10px] uppercase mt-0.5">Cliente Registrado</p>
+                    <p id="perfil-rol" class="text-gray-500 font-mono text-[10px] uppercase mt-0.5">Cliente Registrado
+                    </p>
                 </div>
-                <div class="border-t border-gray-200 dark:border-gray-900 pt-4 text-[11px] font-mono text-gray-500 dark:text-gray-400 space-y-2">
+                <div
+                    class="border-t border-gray-200 dark:border-gray-900 pt-4 text-[11px] font-mono text-gray-500 dark:text-gray-400 space-y-2">
                     <div>ID USUARIO: <span id="perfil-id" class="text-zinc-600">...</span></div>
                     <div>ACCESO: <span id="perfil-creado" class="text-zinc-600">...</span></div>
                 </div>
-                <button onclick="cerrarSesion()" class="w-full text-center border border-zinc-300 dark:border-zinc-800 hover:border-red-500/40 text-gray-500 hover:text-red-500 font-mono text-[10px] py-2 rounded transition uppercase">Cerrar Sesión Activa [X]</button>
+                <button onclick="cerrarSesion()"
+                    class="w-full text-center border border-zinc-300 dark:border-zinc-800 hover:border-red-500/40 text-gray-500 hover:text-red-500 font-mono text-[10px] py-2 rounded transition uppercase">
+                    Cerrar Sesión Activa [X]
+                </button>
             </div>
 
             <div class="md:col-span-2 space-y-8">
-                <section class="border border-gray-200 bg-gray-50 dark:border-gray-900 dark:bg-gray-950/40 p-6 rounded-lg transition-colors">
-                    <h3 class="text-sm font-mono font-bold uppercase tracking-wider text-red-500 mb-6 border-b border-gray-200 dark:border-gray-900 pb-2">Datos de Despacho y Contacto</h3>
+
+                <section
+                    class="border border-gray-200 bg-gray-50/50 dark:border-gray-900 dark:bg-gray-950/40 p-6 rounded-lg transition-colors">
+                    <h3
+                        class="text-sm font-mono font-bold uppercase tracking-wider text-red-500 mb-6 border-b border-gray-200 dark:border-gray-900 pb-2">
+                        Datos de Despacho y Contacto
+                    </h3>
                     <form id="form-perfil" class="grid grid-cols-1 sm:grid-cols-2 gap-4 font-mono text-xs">
                         <div class="sm:col-span-2">
                             <label class="block text-gray-500 uppercase mb-1">Nombre Completo</label>
-                            <input type="text" id="edit-nombre" class="w-full bg-white dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-800 rounded p-2.5 text-black dark:text-white uppercase focus:outline-none focus:border-red-500">
+                            <input type="text" id="edit-nombre"
+                                class="w-full bg-white dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-800 rounded p-2.5 text-black dark:text-white uppercase focus:outline-none focus:border-red-500">
                         </div>
                         <div>
                             <label class="block text-gray-400 dark:text-gray-600 mb-1">Correo Electrónico</label>
-                            <input type="email" id="edit-correo" disabled class="w-full bg-zinc-200 dark:bg-zinc-950 rounded p-2.5 text-zinc-500 cursor-not-allowed">
+                            <input type="email" id="edit-correo" disabled
+                                class="w-full bg-zinc-200 dark:bg-zinc-950 rounded p-2.5 text-zinc-500 cursor-not-allowed">
                         </div>
                         <div>
                             <label class="block text-gray-500 uppercase mb-1">Teléfono</label>
-                            <input type="tel" id="edit-telefono" class="w-full bg-white dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-800 rounded p-2.5 text-black dark:text-white focus:outline-none focus:border-red-500">
+                            <input type="tel" id="edit-telefono"
+                                class="w-full bg-white dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-800 rounded p-2.5 text-black dark:text-white focus:outline-none focus:border-red-500">
                         </div>
                         <div>
                             <label class="block text-gray-500 uppercase mb-1">Comuna</label>
-                            <input type="text" id="edit-comuna" class="w-full bg-white dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-800 rounded p-2.5 text-black dark:text-white uppercase focus:outline-none focus:border-red-500">
+                            <input type="text" id="edit-comuna"
+                                class="w-full bg-white dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-800 rounded p-2.5 text-black dark:text-white uppercase focus:outline-none focus:border-red-500">
                         </div>
                         <div>
                             <label class="block text-gray-500 uppercase mb-1">Dirección (Calle / Av.)</label>
-                            <input type="text" id="edit-direccion" class="w-full bg-white dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-800 rounded p-2.5 text-black dark:text-white uppercase focus:outline-none focus:border-red-500">
+                            <input type="text" id="edit-direccion"
+                                class="w-full bg-white dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-800 rounded p-2.5 text-black dark:text-white uppercase focus:outline-none focus:border-red-500">
                         </div>
                         <div>
                             <label class="block text-gray-500 uppercase mb-1">Número de Casa</label>
-                            <input type="text" id="edit-numero-casa" class="w-full bg-white dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-800 rounded p-2.5 text-black dark:text-white uppercase focus:outline-none focus:border-red-500">
+                            <input type="text" id="edit-numero-casa"
+                                class="w-full bg-white dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-800 rounded p-2.5 text-black dark:text-white uppercase focus:outline-none focus:border-red-500">
                         </div>
                         <div>
                             <label class="block text-gray-500 uppercase mb-1">Depto / Of.</label>
-                            <input type="text" id="edit-depto" class="w-full bg-white dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-800 rounded p-2.5 text-black dark:text-white uppercase focus:outline-none focus:border-red-500">
+                            <input type="text" id="edit-depto"
+                                class="w-full bg-white dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-800 rounded p-2.5 text-black dark:text-white uppercase focus:outline-none focus:border-red-500">
                         </div>
                         <div class="sm:col-span-2 pt-2 flex justify-end">
-                            <button type="button" onclick="guardarDatosLocales()" class="bg-red-600 hover:bg-red-700 text-white font-sans font-bold text-xs tracking-widest px-6 py-3 rounded transition-all uppercase">Actualizar Datos</button>
+                            <button type="button" onclick="guardarDatosLocales()"
+                                class="bg-red-600 hover:bg-red-700 text-white font-sans font-bold text-xs tracking-widest px-6 py-3 rounded transition-all uppercase">
+                                Actualizar Datos
+                            </button>
                         </div>
                     </form>
                 </section>
+
+                <section
+                    class="border border-gray-200 bg-gray-50/50 dark:border-gray-900 dark:bg-gray-950/40 p-6 rounded-lg transition-colors">
+                    <h3
+                        class="text-sm font-mono font-bold uppercase tracking-wider text-zinc-400 dark:text-zinc-500 mb-4 border-b border-gray-200 dark:border-gray-900 pb-2">
+                        Mis Compras / Historial Logístico
+                    </h3>
+
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left font-mono text-xs border-collapse">
+                            <thead>
+                                <tr
+                                    class="border-b border-gray-200 dark:border-gray-900 text-gray-400 text-[10px] uppercase tracking-wider">
+                                    <th class="pb-3 font-normal">ID ÓRDEN</th>
+                                    <th class="pb-3 font-normal">FECHA</th>
+                                    <th class="pb-3 font-normal">DETALLES / REF</th>
+                                    <th class="pb-3 font-normal text-right">TOTAL NETO</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tabla-compras-usuario"
+                                class="divide-y divide-gray-100 dark:divide-gray-900 text-black dark:text-white">
+                                <tr>
+                                    <td colspan="4" class="py-4 text-gray-400 uppercase tracking-wide text-[11px]">
+                                        Sincronizando órdenes con Supabase cloud...</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+
             </div>
         </div>
 
@@ -101,19 +163,16 @@
     <script>
         const supabaseClient = supabase.createClient(CONFIG.SUPABASE_URL, CONFIG.SUPABASE_ANON_KEY);
 
-        // CORREO AUTORIZADO COMO ADMINISTRADOR MAESTRO
-        const EMAIL_ADMINISTRADOR = "torresaguayo142@gmail.com"; 
+        const EMAIL_ADMINISTRADOR = "torresaguayo142@gmail.com";
+        let modoAuthActual = 'login';
 
-        let modoAuthActual = 'login'; // login o registro
-
-        // Cambiar pestañas visuales de Auth
-        window.cambiarModoAuth = function(modo) {
+        window.cambiarModoAuth = function (modo) {
             modoAuthActual = modo;
             const tabL = document.getElementById('tab-login');
             const tabR = document.getElementById('tab-registro');
             const btnSubmit = document.getElementById('btn-auth-submit');
 
-            if(modo === 'login') {
+            if (modo === 'login') {
                 tabL.className = "text-sm font-mono font-bold uppercase tracking-wider text-red-500 border-b-2 border-red-500 pb-1";
                 tabR.className = "text-sm font-mono font-bold uppercase tracking-wider text-gray-400 pb-1";
                 btnSubmit.innerText = "Iniciar Sesión";
@@ -124,8 +183,7 @@
             }
         }
 
-        // PROCESAR LOGIN O REGISTRO EN SUPABASE AUTH
-        window.procesarAuth = async function(event) {
+        window.procesarAuth = async function (event) {
             event.preventDefault();
             const email = document.getElementById('auth-email').value.trim();
             const password = document.getElementById('auth-password').value;
@@ -144,22 +202,75 @@
             }
         }
 
-        // VERIFICACIÓN LOGÍSTICA DE PERMISOS
+        // NUEVA FUNCIÓN: Consulta el historial de compras del usuario activo
+        async function cargarHistorialCompras(emailUsuario) {
+            const tbodyCompras = document.getElementById('tabla-compras-usuario');
+
+            try {
+                // Filtramos la tabla ventas buscando las coincidencias con el email logueado
+                const { data: ventas, error } = await supabaseClient
+                    .from('ventas')
+                    .select('*')
+                    .eq('cliente_email', emailUsuario)
+                    .order('id', { ascending: false }); // Las más nuevas arriba
+
+                if (error) throw error;
+
+                if (!ventas || ventas.length === 0) {
+                    tbodyCompras.innerHTML = `
+                        <tr>
+                            <td colspan="4" class="py-6 text-gray-400 dark:text-gray-500 uppercase tracking-wider text-[10px] text-center">
+                                No registras órdenes de compra en el sistema.
+                            </td>
+                        </tr>`;
+                    return;
+                }
+
+                tbodyCompras.innerHTML = '';
+                ventas.forEach(v => {
+                    const fechaFormateada = new Date(v.created_at).toLocaleDateString('es-CL', {
+                        day: '2-digit',
+                        month: '2-digit',
+                        year: 'numeric'
+                    });
+
+                    tbodyCompras.innerHTML += `
+                        <tr class="hover:bg-gray-50 dark:hover:bg-zinc-900/40 transition-colors">
+                            <td class="py-4 font-bold text-red-500 dark:text-red-400">#00${v.id}</td>
+                            <td class="py-4 text-zinc-600 dark:text-zinc-400">${fechaFormateada}</td>
+                            <td class="py-4 uppercase">
+                                <div class="text-[11px] font-bold">${v.estado}</div>
+                                <div class="text-[9px] text-gray-400 mt-0.5">Destino: ${v.comuna_despacho}</div>
+                            </td>
+                            <td class="py-4 text-right font-sans font-bold text-black dark:text-white">
+                                $${v.total_neto.toLocaleString('es-CL')}
+                            </td>
+                        </tr>
+                    `;
+                });
+
+            } catch (err) {
+                console.error("Falla al traer historial logístico:", err);
+                tbodyCompras.innerHTML = `<tr><td colspan="4" class="py-4 text-red-500 uppercase">Error al sincronizar historial.</td></tr>`;
+            }
+        }
+
         async function verificarEstadoSesion() {
             const { data: { session } } = await supabaseClient.auth.getSession();
             const divAuth = document.getElementById('seccion-auth');
             const divDash = document.getElementById('seccion-dashboard');
-            const contenedorAdmin = document.getElementById('contenedor-admin');
+            const linkAdminMaster = document.getElementById('link-admin');
 
             if (!session) {
-                // Si no hay sesión, se muestra el login y se oculta el panel
                 divAuth.classList.remove('hidden');
                 divDash.classList.add('hidden');
-                if (contenedorAdmin) contenedorAdmin.innerHTML = '';
+                if (linkAdminMaster) {
+                    linkAdminMaster.classList.add('hidden');
+                    linkAdminMaster.classList.remove('inline-block');
+                }
                 return;
             }
 
-            // Si hay sesión, levantamos el panel de control
             divAuth.classList.add('hidden');
             divDash.classList.remove('hidden');
 
@@ -169,31 +280,96 @@
             document.getElementById('perfil-creado').innerText = new Date(user.created_at).toLocaleDateString('es-CL');
             document.getElementById('edit-correo').value = user.email;
 
-            // EVALUACIÓN TÉCNICA DE ROL ADMINISTRADOR
+            // --- NUEVA LOGÍSTICA: REPERTORIO DE DATOS DESDE SUPABASE ---
+            try {
+                const { data: perfil, error } = await supabaseClient
+                    .from('perfiles')
+                    .select('*')
+                    .eq('id', user.id)
+                    .maybeSingle(); // Trae una fila o null si no existe
+
+                if (perfil) {
+                    document.getElementById('edit-nombre').value = perfil.nombre_completo || '';
+                    document.getElementById('edit-telefono').value = perfil.telefono || '';
+                    document.getElementById('edit-comuna').value = perfil.comuna || '';
+                    document.getElementById('edit-direccion').value = perfil.direccion || '';
+                    document.getElementById('edit-numero-casa').value = perfil.numero_casa || '';
+                    document.getElementById('edit-depto').value = perfil.depto_oficina || '';
+                }
+            } catch (err) {
+                console.error("Error cargando datos de perfil:", err);
+            }
+            // -----------------------------------------------------------
+
+            cargarHistorialCompras(user.email);
+
             if (user.email.toLowerCase() === EMAIL_ADMINISTRADOR.toLowerCase()) {
                 document.getElementById('perfil-rol').innerText = "Administrador del Sistema 🔑";
                 document.getElementById('perfil-rol').className = "text-red-500 font-mono text-[10px] uppercase mt-0.5 font-bold";
-
-                // INYECCIÓN DINÁMICA DE LA PESTAÑA EN EL NAVBAR EN TIEMPO REAL
-                if (contenedorAdmin) {
-                    contenedorAdmin.innerHTML = `<a href="admin.html" id="link-admin" class="text-gray-400 dark:text-gray-500 hover:text-red-500 transition-all pb-1 border-b-2 border-transparent uppercase font-bold">ADMIN</a>`;
+                if (linkAdminMaster) {
+                    linkAdminMaster.classList.remove('hidden');
+                    linkAdminMaster.classList.add('inline-block');
                 }
             } else {
                 document.getElementById('perfil-rol').innerText = "Cliente Registrado";
-                if (contenedorAdmin) contenedorAdmin.innerHTML = '';
+                document.getElementById('perfil-rol').className = "text-gray-500 font-mono text-[10px] uppercase mt-0.5";
+                if (linkAdminMaster) {
+                    linkAdminMaster.classList.add('hidden');
+                    linkAdminMaster.classList.remove('inline-block');
+                }
             }
         }
 
-        window.cerrarSesion = async function() {
+        window.cerrarSesion = async function () {
             await supabaseClient.auth.signOut();
             window.location.reload();
         }
 
-        window.guardarDatosLocales = function() {
-            alert("¡Datos guardados provisionalmente!");
+        window.guardarDatosLocales = async function () {
+            const btnActualizar = event.target;
+            btnActualizar.innerText = "Sincronizando...";
+            btnActualizar.disabled = true;
+
+            try {
+                const { data: { session } } = await supabaseClient.auth.getSession();
+                if (!session) return alert("Sesión expirada.");
+
+                const user = session.user;
+
+                // Capturamos lo que el cliente escribió en la pantalla
+                const nombre = document.getElementById('edit-nombre').value.trim();
+                const telefono = document.getElementById('edit-telefono').value.trim();
+                const comuna = document.getElementById('edit-comuna').value.trim();
+                const direccion = document.getElementById('edit-direccion').value.trim();
+                const numeroCasa = document.getElementById('edit-numero-casa').value.trim();
+                const depto = document.getElementById('edit-depto').value.trim();
+
+                // Operación UPSERT relacional amarrada al ID único de Auth
+                const { error } = await supabaseClient
+                    .from('perfiles')
+                    .upsert({
+                        id: user.id,
+                        nombre_completo: nombre,
+                        telefono: telefono,
+                        comuna: comuna,
+                        direccion: direccion,
+                        numero_casa: numeroCasa,
+                        depto_oficina: depto,
+                        updated_at: new Date()
+                    });
+
+                if (error) throw error;
+
+                alert("¡Datos de despacho guardados con éxito en la nube!");
+
+            } catch (err) {
+                alert("Error al guardar en el servidor: " + err.message);
+            } finally {
+                btnActualizar.innerText = "Actualizar Datos";
+                btnActualizar.disabled = false;
+            }
         }
 
-        // CONTROL DE APARIENCIA COHERENTE
         const temaGuardado = localStorage.getItem('tema_apariencia');
         if (temaGuardado === 'dark' || (!temaGuardado && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
             document.documentElement.classList.add('dark');
@@ -201,7 +377,7 @@
             document.documentElement.classList.remove('dark');
         }
 
-        window.conmutarApariencia = function() {
+        window.conmutarApariencia = function () {
             const html = document.documentElement;
             if (html.classList.contains('dark')) {
                 html.classList.remove('dark');
@@ -217,28 +393,23 @@
             try {
                 const respHeader = await fetch('components/header.html');
                 document.getElementById('header-contenedor').innerHTML = await respHeader.text();
-                
-                // Ejecutamos la verificación de permisos primero para saber si pintar la pestaña Admin
+
                 await verificarEstadoSesion();
 
-                // Destacamos la pestaña PERFIL
                 const linkPerfil = document.getElementById('link-perfil');
                 if (linkPerfil) {
                     linkPerfil.classList.remove('text-gray-400', 'dark:text-gray-500');
                     linkPerfil.classList.add('text-black', 'dark:text-white', 'border-black', 'dark:border-white');
                 }
 
-                // Colocar texto adecuado en botón apariencia
                 const btn = document.getElementById('btn-apariencia');
                 if (btn && !document.documentElement.classList.contains('dark')) {
                     btn.innerText = "Modo Oscuro 🌙";
                 }
 
-                // Cargar Footer
                 const respFooter = await fetch('components/footer.html');
                 document.getElementById('footer-contenedor').innerHTML = await respFooter.text();
 
-                // Poner saludo
                 const { data: { session } } = await supabaseClient.auth.getSession();
                 if (session) {
                     const saludoNav = document.getElementById('saludo-nav');
