@@ -15,14 +15,14 @@
             <ul class="space-y-2 text-gray-500">
                 <li class="flex items-center gap-2">
                     <span>📞</span> 
-                    <a href="https://wa.me/56912345678" target="_blank" class="hover:text-white transition">+56 9 1234 5678 (WhatsApp)</a>
+                    <a href="https://wa.me/56984996539" target="_blank" class="hover:text-white transition">+56 9 8499 6539 (WhatsApp)</a>
                 </li>
                 <li class="flex items-center gap-2">
                     <span>✉️</span> 
-                    <a href="mailto:contacto@torresaguayo.cl" class="hover:text-white transition">contacto@torresaguayo.cl</a>
+                    <a href="mailto:scannerstorresaguayo@gmail.com" class="hover:text-white transition">scannerstorresaguayo@gmail.com</a>
                 </li>
                 <li class="flex items-center gap-2 font-sans text-[11px]">
-                    <span>📍</span> Santiago, Chile — Despacho a Domicilio
+                    <span>📍</span> Chillán, Chile — Despacho a Domicilio
                 </li>
             </ul>
         </div>
@@ -32,7 +32,7 @@
             <div class="flex flex-col md:items-end space-y-2 text-gray-500">
                 <a href="index.html" class="hover:text-red-500 transition uppercase">Inicio</a>
                 <a href="catalogo.html" class="hover:text-red-500 transition uppercase">Catálogo</a>
-                <a href="login.html" class="hover:text-red-500 transition uppercase text-red-600/80">Panel Admin 🔑</a>
+                <a href="admin.html" id="link-footer-admin" class="hover:text-red-500 transition uppercase text-red-600/80 hidden">Panel Admin 🔑</a>
             </div>
         </div>
 
@@ -43,7 +43,34 @@
             © 2026 TORRES AGUAYO WEB v1.5 — TODOS LOS DERECHOS RESERVADOS
         </div>
         <div class="font-sans text-[10px] tracking-wide text-gray-700">
-            DESARROLLADO BAJO ARQUITECTURA REACTIVA ESTÁTICA
+            DESARROLLADO POR <a href="https://focaldev.cl" target="_blank" class="font-bold text-red-500 hover:text-red-600 transition">FOCALDEV</a>
         </div>
     </div>
+
+    <script>
+        (async function verificarVisibilidadAdminFooter() {
+            try {
+                // Esperamos un milisegundo por si la librería de Supabase se está inicializando en el documento principal
+                setTimeout(async () => {
+                    if (typeof supabase !== 'undefined' && typeof CONFIG !== 'undefined') {
+                        const clientFooter = supabase.createClient(CONFIG.SUPABASE_URL, CONFIG.SUPABASE_ANON_KEY);
+                        const { data: { session } } = await clientFooter.auth.getSession();
+                        
+                        // Lista de administradores autorizados (usa los mismos que en tu admin.html)
+                        const admins = ['torresaguayo142@gmail.com']; 
+
+                        if (session && session.user && session.user.email) {
+                            const correoActual = session.user.email.toLowerCase();
+                            if (admins.includes(correoActual)) {
+                                // Si es admin, le quitamos la clase 'hidden' y el enlace aparece mágicamente
+                                document.getElementById('link-footer-admin').classList.remove('hidden');
+                            }
+                        }
+                    }
+                }, 150);
+            } catch (e) {
+                console.error("Error evaluando roles en footer:", e);
+            }
+        })();
+    </script>
 </footer>

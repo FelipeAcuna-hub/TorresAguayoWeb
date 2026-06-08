@@ -109,8 +109,10 @@
                             <option value="iluminacion">Iluminación</option>
                             <option value="electronica">Electrónica</option>
                             <option value="accesorios">Accesorios</option>
-                            <option value="mecanica">Mecánica</option> //recordar agregar la nueva categoria en el filtro del catalogo.html
+                            <option value="mecanica">Mecánica</option>
                             <option value="Scanners">Scanners y Diagnóstico</option>
+                            <option value="insumos">Insumos</option>
+                            <option value="maquinas-llaves">Máquinas de Cortar Llaves</option>
                         </select>
                     </div>
 
@@ -205,7 +207,6 @@
         const labelImgReq = document.getElementById('label-img-req');
         const inputIdOculto = document.getElementById('p-id-oculto');
 
-        // 1. CÁLCULO DE MÉTRICAS Y LISTAR TABLA
         // 1. CÁLCULO DE MÉTRICAS + RENDERIZACIÓN DE LAS DOS TABLAS (INVENTARIO + PEDIDOS)
         async function calcularMetricasYListar() {
             try {
@@ -256,7 +257,7 @@
                     });
                 }
 
-                // B. PARCHE NUEVO: Renderizar Historial de Ventas / Pedidos Globales
+                // B. Renderizar Historial de Ventas / Pedidos Globales
                 const tablaPedidosBody = document.getElementById('tabla-pedidos-admin');
                 const { data: ventas, error: errVentas } = await supabaseClient
                     .from('ventas')
@@ -353,8 +354,7 @@
             document.getElementById('p-archivo-imagen').required = true;
         }
 
-        // 2. FUNCIÓN DE INYECCIÓN / EDICIÓN HÍBRIDA MUTABLE
-        // 2. FUNCIÓN DE INYECCIÓN / EDICIÓN HÍBRIDA MULTI-FOTO (CORREGIDA PARA UPDATE RELACIONAL)
+        // FUNCIÓN DE INYECCIÓN / EDICIÓN HÍBRIDA MULTI-FOTO (CONSERVANDO PARCHE DE LLAVE FORÁNEA ACTUALIZADO)
         window.inyectarProductoCloud = async function (event) {
             event.preventDefault();
 
@@ -416,7 +416,7 @@
 
                 // C. PERSISTENCIA LOGÍSTICA SQL
                 if (esEdicion) {
-                    // ACCIÓN UPDATE: Modificar datos técnicos (Agregamos .select() para asegurar consistencia relacional)
+                    // ACCIÓN UPDATE: Modificar datos técnicos
                     const { data: productoActualizado, error: updateErr } = await supabaseClient
                         .from('productos')
                         .update({
@@ -429,7 +429,7 @@
                             pdf: urlFinalPdf
                         })
                         .eq('id', idTarget)
-                        .select(); // <--- CLAVE: Esto previene la violación de llave foránea al retornar el registro activo
+                        .select(); // CLAVE: Esto previene la violación de llave foránea al retornar el registro activo
 
                     if (updateErr) throw updateErr;
 
@@ -465,6 +465,7 @@
 
                     if (insErr) throw insErr;
 
+                    // PARCHE DE CORRECCIÓN APLICADO: Reemplazado "filasFilas" por el mapeo correcto "filasGaleria" para evitar crashes relacionales
                     if (urlsDeGaleria.length > 0 && productoInsertado) {
                         const nuevoProductoId = productoInsertado[0].id;
                         const filasGaleria = urlsDeGaleria.map(url => ({
@@ -474,7 +475,7 @@
 
                         const { error: galeriaError } = await supabaseClient
                             .from('imagenes_galeria')
-                            .insert(filasFilas);
+                            .insert(filasGaleria);
 
                         if (galeriaError) throw galeriaError;
                     }

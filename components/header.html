@@ -1,21 +1,103 @@
-<nav class="border-b border-gray-200 bg-white text-black dark:border-gray-800 dark:bg-black/80 dark:text-white p-5 flex justify-between items-center transition-colors duration-300">
-    <div class="flex flex-col">
-        <div class="font-black tracking-tighter text-2xl uppercase leading-none">Torres Aguayo</div>
-        <div id="saludo-nav" class="text-red-500 font-mono text-[10px] tracking-widest uppercase mt-1 transition-all duration-300 opacity-0"></div>
+<div class="relative z-50 w-full">
+
+    <nav class="w-full border-b border-gray-200 bg-white text-black dark:border-gray-800 dark:bg-black/80 dark:text-white p-5 flex justify-between items-center transition-colors duration-300">
+        
+        <a href="index.html" class="flex items-center space-x-3 group focus:outline-none">
+            <img src="img/magic_torresaguayo.svg" alt="Torres Aguayo" class="h-12 sm:h-16 w-auto object-contain transition-transform duration-300 group-hover:scale-105">
+            <div class="hidden sm:flex flex-col">
+                <div class="font-black tracking-tighter text-xl uppercase leading-none text-black dark:text-white">
+                    Torres <span class="text-red-600 not-italic font-light">Aguayo</span>
+                </div>
+                <div id="saludo-nav" class="text-red-500 font-mono text-[9px] tracking-widest uppercase mt-0.5 transition-all duration-300 opacity-0"></div>
+            </div>
+        </a>
+        
+        <div class="space-x-3 sm:space-x-6 text-[10px] sm:text-xs font-bold tracking-widest flex items-center">
+            <a href="index.html" id="link-inicio" class="text-gray-400 dark:text-zinc-300 hover:text-red-500 dark:hover:text-white transition-all pb-1 border-b-2 border-transparent">INICIO</a>
+            <a href="servicios.html" id="link-servicios" class="text-gray-400 dark:text-zinc-300 hover:text-red-500 dark:hover:text-white transition-all pb-1 border-b-2 border-transparent">SERVICIOS</a>
+            <a href="catalogo.html" id="link-catalogo" class="text-gray-400 dark:text-zinc-300 hover:text-red-500 dark:hover:text-white transition-all pb-1 border-b-2 border-transparent">CATÁLOGO</a>
+            <a href="carrito.html" id="link-carrito" class="text-gray-400 dark:text-zinc-300 hover:text-red-500 dark:hover:text-white transition-all pb-1 border-b-2 border-transparent">CARRITO</a>
+            
+            <a href="admin.html" id="link-admin" class="hidden text-gray-400 dark:text-zinc-300 hover:text-red-500 dark:hover:text-white transition-all pb-1 border-b-2 border-transparent uppercase">ADMIN</a>
+            
+            <a href="perfil.html" id="link-perfil" class="text-gray-400 dark:text-zinc-300 hover:text-red-500 dark:hover:text-white transition-all pb-1 border-b-2 border-transparent">PERFIL</a>
+            
+            <button onclick="conmutarApariencia()" id="btn-apariencia" class="border border-zinc-300 dark:border-zinc-800 bg-zinc-100 dark:bg-zinc-950 px-2 sm:px-2.5 py-1 rounded font-mono text-[9px] sm:text-[10px] text-zinc-600 dark:text-zinc-400 hover:text-red-500 transition uppercase">
+                Modo Claro ☀️
+            </button>
+
+            <button onclick="manejarFlujoSesionNav()" id="btn-sesion-nav" class="hidden border px-2 sm:px-2.5 py-1 rounded font-mono text-[9px] sm:text-[10px] uppercase font-bold tracking-wider transition-all duration-200">
+                Cargando...
+            </button>
+        </div>
+    </nav>
+
+    <div class="w-full bg-blue-900 dark:bg-blue-950 text-white font-mono text-[10px] tracking-wider py-2.5 px-4 sm:px-8 border-b border-blue-800 dark:border-blue-900 transition-colors duration-300">
+        <div class="max-w-6xl mx-auto flex flex-col space-y-3">
+            
+            <div class="w-full flex flex-col sm:flex-row justify-between items-center gap-4">
+                <div class="flex flex-wrap items-center justify-center sm:justify-start gap-4 sm:gap-6">
+                    <a href="https://wa.me/56984996539" target="_blank" class="flex items-center gap-1.5 hover:text-red-400 transition-colors">
+                        <span>📞</span> <span class="uppercase">Celular: +56 9 8499 6539</span>
+                    </a>
+                    <a href="mailto:scannerstorresaguayo@gmail.com" class="flex items-center gap-1.5 hover:text-red-400 transition-colors">
+                        <span>✉️</span> <span class="lowercase">scannerstorresaguayo@gmail.com</span>
+                    </a>
+                </div>
+
+                <div class="flex items-center justify-center sm:justify-end gap-5 flex-shrink-0">
+                    <a href="https://www.instagram.com/torresaguayo.cl?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw==" target="_blank" class="flex items-center gap-2 hover:text-red-400 transition-colors uppercase font-bold group">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" class="fill-current transition-transform duration-200 group-hover:scale-110" viewBox="0 0 16 16">
+                            <path d="M8 0C5.829 0 5.556.01 4.703.048 3.85.088 3.269.222 2.76.42a3.9 3.9 0 0 0-1.417.923A3.9 3.9 0 0 0 .42 2.76C.222 3.268.087 3.85.048 4.7.01 5.555 0 5.827 0 8.001c0 2.172.01 2.444.048 3.297.04.852.174 1.433.372 1.942.205.526.478.972.923 1.417.444.445.89.719 1.416.923.51.198 1.09.333 1.942.372C5.555 15.99 5.827 16 8 16s2.444-.01 3.298-.048c.851-.04 1.434-.174 1.943-.372a3.9 3.9 0 0 0 1.416-.923c.445-.445.718-.891.923-1.417.197-.509.332-1.09.372-1.942C15.99 10.445 16 10.173 16 8s-.01-2.444-.048-3.298c-.04-.851-.175-1.433-.372-1.941a3.9 3.9 0 0 0-.923-1.417A3.9 3.9 0 0 0 13.24.42c-.51-.198-1.092-.333-1.943-.372C10.443.01 10.172 0 7.998 0zm-.717 1.442h.718c2.136 0 2.389.007 3.232.046.78.035 1.204.166 1.486.275.373.145.64.319.92.599s.453.546.598.92c.11.281.24.705.275 1.485.039.843.047 1.096.047 3.231s-.008 2.389-.047 3.232c-.035.78-.166 1.203-.275 1.485 Barb 2.5 2.5 0 0 1-.599.919c-.28.28-.546.453-.92.598-.28.11-.704.24-1.485.276-.843.038-1.096.047-3.232.047s-2.39-.009-3.233-.047c-.78-.036-1.203-.166-1.485-.276a2.5 2.5 0 0 1-.92-.598 2.5 2.5 0 0 1-.6-.92c-.109-.281-.24-.705-.275-1.485-.038-.843-.046-1.096-.046-3.233s.008-2.388.046-3.231c.036-.78.166-1.204.276-1.486.145-.373.319-.64.599-.92.28-.28.546-.453.92-.598.282-.11.705-.24 1.485-.276.738-.034 1.024-.044 2.515-.045zm4.988 1.328a.96.96 0 1 0 0 1.92.96.96 0 0 0 0-1.92m-4.27 1.122a4.109 4.109 0 1 0 0 8.217 4.109 4.109 0 0 0 0-8.217m0 1.441a2.667 2.667 0 1 1 0 5.334 2.667 2.667 0 0 1 0-5.334"/>
+                        </svg>
+                        <span>Instagram</span>
+                    </a>
+                    <a href="https://www.facebook.com/ScannersTorresAguayoOficial" target="_blank" class="flex items-center gap-2 hover:text-red-400 transition-colors uppercase font-bold group">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" class="fill-current transition-transform duration-200 group-hover:scale-110" viewBox="0 0 16 16">
+                            <path d="M16 8.049c0-4.446-3.582-8.05-8-8.05C3.58 0 0 3.604 0 8.049c0 4.004 2.925 7.347 6.775 7.951v-5.625h-2.03V8.05H6.77V6.275c0-2.017 1.194-3.136 3.028-3.136.872 0 1.787.155 1.787.155v1.98h-1.009c-.993 0-1.303.621-1.303 1.258v1.51h2.218l-.354 2.326H9.25V16c3.824-.604 6.75-3.934 6.75-7.951"/>
+                        </svg>
+                        <span>Facebook</span>
+                    </a>
+                </div>
+            </div>
+
+            <div class="w-full border-t border-blue-800/60 dark:border-blue-900/40 pt-2 text-center">
+                <span class="block w-full text-blue-300 dark:text-blue-400 text-[9px] font-bold uppercase tracking-[0.2em]">
+                    ⚡ Chile — Distribuidor Oficial Autorizado ⚡
+                </span>
+            </div>
+        </div>
     </div>
-    
-    <div class="space-x-8 text-xs font-bold tracking-widest flex items-center">
-        <a href="index.html" id="link-inicio" class="text-gray-400 dark:text-gray-500 hover:text-red-500 transition-all pb-1 border-b-2 border-transparent">INICIO</a>
-        <a href="servicios.html" id="link-servicios" class="text-gray-400 dark:text-gray-500 hover:text-red-500 transition-all pb-1 border-b-2 border-transparent">SERVICIOS</a>
-        <a href="catalogo.html" id="link-catalogo" class="text-gray-400 dark:text-gray-500 hover:text-red-500 transition-all pb-1 border-b-2 border-transparent">CATÁLOGO</a>
-        <a href="carrito.html" id="link-carrito" class="text-gray-400 dark:text-gray-500 hover:text-red-500 transition-all pb-1 border-b-2 border-transparent">CARRITO</a>
-        
-        <a href="admin.html" id="link-admin" class="hidden text-gray-400 dark:text-gray-500 hover:text-red-500 transition-all pb-1 border-b-2 border-transparent uppercase">ADMIN</a>
-        
-        <a href="perfil.html" id="link-perfil" class="text-gray-400 dark:text-gray-500 hover:text-red-500 transition-all pb-1 border-b-2 border-transparent">PERFIL</a>
-        
-        <button onclick="conmutarApariencia()" id="btn-apariencia" class="border border-zinc-300 dark:border-zinc-800 bg-zinc-100 dark:bg-zinc-950 px-2.5 py-1 rounded font-mono text-[10px] text-zinc-600 dark:text-zinc-400 hover:text-red-500 transition uppercase">
-            Modo Claro ☀️
-        </button>
-    </div>
-</nav>
+</div>
+
+<script>
+    // Se mantiene intacto tu motor de verificación asíncrona limpia
+    window.actualizarBotonSesionNav = async function(session) {
+        const btnSesion = document.getElementById('btn-sesion-nav');
+        if (!btnSesion) return;
+
+        if (session) {
+            btnSesion.innerText = "Salir [→]";
+            btnSesion.className = "border border-red-500/30 bg-red-500/10 text-red-500 hover:bg-red-600 hover:text-white px-2 sm:px-2.5 py-1 rounded font-mono text-[9px] sm:text-[10px] transition uppercase font-bold tracking-wider inline-block";
+        } else {
+            btnSesion.innerText = "Entrar [🔑]";
+            btnSesion.className = "border border-zinc-300 dark:border-zinc-800 bg-zinc-100 dark:bg-zinc-950 text-zinc-600 dark:text-zinc-400 hover:text-red-500 px-2 sm:px-2.5 py-1 rounded font-mono text-[9px] sm:text-[10px] transition uppercase font-bold tracking-wider inline-block";
+        }
+    };
+
+    async function manejarFlujoSesionNav() {
+        if (typeof supabase !== 'undefined' && typeof CONFIG !== 'undefined') {
+            const clientHeader = supabase.createClient(CONFIG.SUPABASE_URL, CONFIG.SUPABASE_ANON_KEY);
+            const { data: { session } } = await clientHeader.auth.getSession();
+
+            if (session) {
+                if (confirm("¿Deseas cerrar tu sesión activa en Torres Aguayo?")) {
+                    await clientHeader.auth.signOut();
+                    window.location.reload();
+                }
+            } else {
+                window.location.href = "login.html";
+            }
+        }
+    }
+</script>

@@ -32,15 +32,14 @@
             <span id="contador-items" class="text-gray-400 dark:text-gray-500 font-mono text-xs tracking-wider">0 ITEMS MOSTRADOS</span>
         </div>
 
-        <div class="flex flex-col md:flex-row gap-4 mb-10 items-center justify-between">
+        <div class="flex flex-col xl:flex-row gap-4 mb-10 items-center justify-between">
 
-            <div class="w-full md:w-72 relative">
+            <div class="w-full xl:w-72 relative">
                 <input type="text" id="buscador" oninput="buscarYFiltrar()" placeholder="BUSCAR COMPONENTE..."
                     class="w-full bg-zinc-100 border border-zinc-300 dark:bg-zinc-950 dark:border-zinc-800 rounded px-4 py-2 font-mono text-xs tracking-wider text-black dark:text-white placeholder-zinc-400 dark:placeholder-zinc-600 focus:outline-none focus:border-red-500 transition uppercase">
             </div>
 
-            <div id="contenedor-botones-filtros"
-                class="flex flex-wrap gap-2 font-mono text-[11px] tracking-wider w-full md:w-auto justify-start md:justify-end">
+            <div id="contenedor-botones-filtros" class="flex flex-wrap gap-2 font-mono text-[11px] tracking-wider w-full xl:w-auto justify-start xl:justify-end">
                 <button onclick="cambiarCategoria('todos')" id="btn-todos"
                     class="px-4 py-2 rounded border font-bold uppercase transition bg-black text-white border-black dark:bg-white dark:text-black dark:border-white">
                     Todos [■]
@@ -61,6 +60,14 @@
                     class="px-4 py-2 rounded border font-bold uppercase transition bg-transparent text-gray-500 border-zinc-300 dark:text-gray-400 dark:border-zinc-800 hover:text-black dark:hover:text-white hover:border-zinc-400 dark:hover:border-zinc-600">
                     Scanners
                 </button>
+                <button onclick="cambiarCategoria('insumos')" id="btn-insumos" 
+                    class="px-4 py-2 rounded border font-bold uppercase transition bg-transparent text-gray-500 border-zinc-300 dark:text-gray-400 dark:border-zinc-800 hover:text-black dark:hover:text-white hover:border-zinc-400 dark:hover:border-zinc-600">
+                    Insumos
+                </button>
+                <button onclick="cambiarCategoria('maquinas-llaves')" id="btn-maquinas-llaves" 
+                    class="px-4 py-2 rounded border font-bold uppercase transition bg-transparent text-gray-500 border-zinc-300 dark:text-gray-400 dark:border-zinc-800 hover:text-black dark:hover:text-white hover:border-zinc-400 dark:hover:border-zinc-600">
+                    Máquinas de Llaves
+                </button>
             </div>
         </div>
 
@@ -80,13 +87,12 @@
         let todosLosProductos = [];
         let categoriaActiva = 'todos';
 
-        // NORMALIZADOR LOCAL SEGURO: Garantiza que leamos siempre la estructura [{id, cantidad}]
         function obtenerEstructuraCarritoLocal() {
             let crudo = localStorage.getItem('carrito_seleccion');
             if (!crudo) return [];
             let arreglo = JSON.parse(crudo);
             if (arreglo.length > 0 && typeof arreglo[0] !== 'object') {
-                return []; // Si el caché es del formato viejo, lo tratamos como vacío para evitar caídas
+                return []; 
             }
             return arreglo;
         }
@@ -131,39 +137,41 @@
 
         window.cambiarCategoria = function (nuevaCategoria) {
             categoriaActiva = nuevaCategoria;
-            const botones = ['todos', 'iluminacion', 'electronica', 'accesorios', 'scanners'];
+            // ACTUALIZACIÓN: Incluimos los nuevos IDs en el array para que cambien de color al estar activos
+            const botones = ['todos', 'iluminacion', 'electronica', 'accesorios', 'scanners', 'insumos', 'maquinas-llaves'];
             const esDark = document.documentElement.classList.contains('dark');
 
             botones.forEach(cat => {
                 const btn = document.getElementById(`btn-${cat}`);
-                if (cat === nuevaCategoria) {
-                    btn.className = esDark
-                        ? "px-4 py-2 rounded border font-bold uppercase transition bg-white text-black border-white"
-                        : "px-4 py-2 rounded border font-bold uppercase transition bg-black text-white border-black";
-                } else {
-                    btn.className = "px-4 py-2 rounded border font-bold uppercase transition bg-transparent text-gray-500 border-zinc-300 dark:text-gray-400 dark:border-zinc-800 hover:text-black dark:hover:text-white hover:border-zinc-400 dark:hover:border-zinc-600";
+                if (btn) {
+                    if (cat === nuevaCategoria) {
+                        btn.className = esDark
+                            ? "px-4 py-2 rounded border font-bold uppercase transition bg-white text-black border-white"
+                            : "px-4 py-2 rounded border font-bold uppercase transition bg-black text-white border-black";
+                    } else {
+                        btn.className = "px-4 py-2 rounded border font-bold uppercase transition bg-transparent text-gray-500 border-zinc-300 dark:text-gray-400 dark:border-zinc-800 hover:text-black dark:hover:text-white hover:border-zinc-400 dark:hover:border-zinc-600";
+                    }
                 }
             });
 
             buscarYFiltrar();
         }
 
-        // NUEVO MOTOR UNIFICADO: Añade de manera reactiva desde el catálogo directo
-        window.agregarAlCarritoDesdeCatalogo = function(productoId) {
+        window.agregarAlCarritoDesdeCatalogo = function (productoId) {
             const idNum = Number(productoId);
             let actuales = obtenerEstructuraCarritoLocal();
-            
+
             const existe = actuales.find(item => Number(item.id) === idNum);
-            
+
             if (!existe) {
                 actuales.push({ id: idNum, cantidad: 1 });
             } else {
                 existe.cantidad += 1;
             }
-            
+
             localStorage.setItem('carrito_seleccion', JSON.stringify(actuales));
             actualizarBadgeHeader();
-            buscarYFiltrar(); // Volvemos a dibujar para que cambie el estado visual del botón al instante
+            buscarYFiltrar(); 
             alert("¡Componente añadido al carro de despacho!");
         }
 
@@ -191,15 +199,12 @@
                 return;
             }
 
-            // Traemos el estado real del carro para pintar el estilo del botón
             const carritoActual = obtenerEstructuraCarritoLocal();
 
             lista.forEach(prod => {
                 const displayId = prod.id.toString().slice(-4);
-                
-                // CORRECCIÓN: Buscamos si el ID del producto está dentro de nuestra lista de objetos del carro
                 const itemEnCarro = carritoActual.find(item => Number(item.id) === Number(prod.id));
-                const esSeleccionado = !!itemEnCarro; 
+                const esSeleccionado = !!itemEnCarro;
 
                 const claseTarjeta = esSeleccionado
                     ? "border-red-500 bg-zinc-50 dark:bg-zinc-950 p-6 rounded-lg transition-all flex flex-col justify-between shadow-[0_0_15px_rgba(239,68,68,0.15)] relative border"
@@ -217,7 +222,7 @@
                 let botonPdf = '';
                 if (prod.pdf && prod.pdf !== "") {
                     botonPdf = `
-                        <a href="${prod.pdf}" target="_blank" class="block text-center bg-zinc-200 dark:bg-zinc-900 hover:bg-zinc-300 dark:hover:bg-zinc-800 text-gray-700 dark:text-gray-300 hover:text-black dark:hover:text-white font-mono text-[10px] tracking-wider py-2 rounded border border-zinc-300 dark:border-zinc-800 transition mb-3 uppercase">
+                        <a href="${prod.pdf}" target="_blank" class="block text-center bg-zinc-200 dark:bg-zinc-900 hover:bg-zinc-300 dark:hover:hover:bg-zinc-800 text-gray-700 dark:text-gray-300 hover:text-black dark:hover:text-white font-mono text-[10px] tracking-wider py-2 rounded border border-zinc-300 dark:border-zinc-800 transition mb-3 uppercase">
                             📄 Ficha Técnica (PDF)
                         </a>
                     `;
@@ -256,7 +261,6 @@
             });
         }
 
-        // 5. MANEJO DE APARIENCIA LUMÍNICA
         const temaGuardado = localStorage.getItem('tema_apariencia');
         if (temaGuardado === 'dark' || (!temaGuardado && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
             document.documentElement.classList.add('dark');
@@ -276,17 +280,14 @@
             sincronizarEcosistema();
         }
 
-        // 6. MOTOR DE INYECCIÓN MODULAR CENTRALIZADO
         async function sincronizarEcosistema() {
             await inicializarMenuGlobal('link-catalogo');
             actualizarBadgeHeader();
-            
-            // Renderizamos pie de página de forma nativa
+
             const respFooter = await fetch('components/footer.html');
             document.getElementById('footer-contenedor').innerHTML = await respFooter.text();
         }
 
-        // Ejecución única de arranque limpio
         sincronizarEcosistema();
         cargarCatalogo();
     </script>
